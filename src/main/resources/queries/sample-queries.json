@@ -1,0 +1,31 @@
+{
+  "excel": {
+    "db": "sampleDB",
+    "output": "output/sample_${DATE.KST:yyyyMMddHHmmss}.xlsx",
+    "maxRows": 1000,
+    "header": {
+      "font": { "name": "Arial", "size": 12, "color": "FFFFFF", "bold": true },
+      "fill": { "color": "4F81BD" },
+      "alignment": { "horizontal": "center", "vertical": "middle" },
+      "border": { "all": { "style": "thin", "color": "000000" } }
+    },
+    "body": {
+      "font": { "name": "Arial", "size": 11, "color": "000000", "bold": false },
+      "alignment": { "horizontal": "left", "vertical": "middle" },
+      "border": { "all": { "style": "thin", "color": "000000" } }
+    }
+  },
+  "vars": {
+    "startDate": "2024-01-01",
+    "endDate": "2024-06-30",
+    "regionList": ["Seoul", "Busan"]
+  },
+  "sheets": [
+    {
+      "name": "Orders",
+      "use": true,
+      "db": "sampleDB",
+      "query": "SELECT TOP 100 * FROM Orders WHERE OrderDate >= '${startDate}' AND OrderDate <= '${endDate}'"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "sampleDB": {
+    "type": "mssql",
+    "user": "sample",
+    "password": "sample1234!",
+    "server": "localhost",
+    "database": "SampleDB",
+    "port": 1433,
+    "options": {
+      "encrypt": false,
+      "trustServerCertificate": true,
+      "connectionTimeout": 30000
+    }
+  },
+  "mysqlDB": {
+    "type": "mysql",
+    "user": "sahara",
+    "password": "1111",
+    "server": "localhost",
+    "database": "etcdb",
+    "port": 3306,
+    "options": {
+      "connectionTimeout": 30000
+    }
+  },
+  "postgresDB": {
+    "type": "postgresql",
+    "user": "postgres",
+    "password": "1111",
+    "server": "localhost",
+    "database": "postgres",
+    "port": 5432,
+    "options": {
+      "connectionTimeout": 30000
+    }
+  },
+  "sqliteDB": {
+    "type": "sqlite",
+    "database": "./data/mydb.sqlite"
+  },
+  "oracleDB": {
+    "type": "oracle",
+    "user": "c##scott",
+    "password": "tiger",
+    "server": "localhost",
+    "port": 1521,
+    "serviceName": "xe",
+    "options": {
+      "connectionTimeout": 30000
+    }
+  },
+  "tiberoDB": {
+    "type": "tibero",
+    "user": "tibero",
+    "password": "tibero",
+    "server": "localhost",
+    "port": 8629,
+    "serviceName": "tibero",
+    "options": {
+      "connectionTimeout": 30000
+    }
+  }
+}
