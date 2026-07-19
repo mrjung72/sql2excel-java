@@ -60,7 +60,6 @@ public enum DatabaseType {
             case PG:
                 return buildPostgresUrl(config);
             case SQLITE:
-            case SQLITE3:
                 return buildSqliteUrl(config);
             case ORACLE:
             case ORACLEDB:

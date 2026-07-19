@@ -160,7 +160,7 @@ public class VariableResolver {
             return "${" + dateKey + "}";
         }
 
-        ZoneOffset offset = ZoneOffset.ofTotalMinutes(offsetMinutes);
+        ZoneOffset offset = ZoneOffset.ofTotalSeconds(offsetMinutes*60);
         ZonedDateTime now = ZonedDateTime.of(LocalDateTime.now(), offset);
 
         String javaPattern = convertNodeDatePattern(pattern);
