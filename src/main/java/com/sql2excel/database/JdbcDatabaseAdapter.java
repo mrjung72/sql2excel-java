@@ -31,7 +31,11 @@ public class JdbcDatabaseAdapter implements DatabaseAdapter {
         if (driverClass == null || driverClass.isEmpty()) {
             driverClass = type.getDefaultDriverClass();
         }
-        if (driverClass != null && !driverClass.isEmpty()) {
+
+        String driverJar = config.getJar();
+        if (driverJar != null && !driverJar.isEmpty()) {
+            DriverLoader.registerDriver(driverJar, driverClass);
+        } else if (driverClass != null && !driverClass.isEmpty()) {
             try {
                 Class.forName(driverClass);
             } catch (ClassNotFoundException e) {
@@ -40,6 +44,7 @@ public class JdbcDatabaseAdapter implements DatabaseAdapter {
         }
 
         String url = type.buildJdbcUrl(config);
+
         String user = config.getUser();
         String password = config.getPassword();
 

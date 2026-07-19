@@ -18,6 +18,7 @@ public class DatabaseConfig {
     private String sid;
     private String connectString;
     private String dsn;
+    private String jar;
     private Boolean isWritable = true;
     private String description;
     private Map<String, Object> options;
@@ -125,6 +126,14 @@ public class DatabaseConfig {
 
     public void setDsn(String dsn) {
         this.dsn = dsn;
+    }
+
+    public String getJar() {
+        return jar;
+    }
+
+    public void setJar(String jar) {
+        this.jar = jar;
     }
 
     public Boolean getIsWritable() {
