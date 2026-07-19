@@ -30,6 +30,31 @@ mvn package
 
 ## 실행
 
+### 인터랙티브 메뉴
+
+인수 없이 실행하면 `sql2excel-nodejs`와 동일한 메뉴 화면이 출력됩니다.
+
+```bash
+java -jar target/sql2excel-java-1.0.0.jar
+```
+
+```text
+SQL2Excel v1.0.0
+
+메뉴 선택
+
+1. 쿼리 정의 파일 검증
+2. 데이터베이스 연결 테스트
+
+3. 엑셀 파일 생성 (XML)
+4. 엑셀 파일 생성 (JSON)
+
+5. 도움말
+0. 종료
+```
+
+### 명령어 직접 실행
+
 ```bash
 # 실행 가능한 JAR로 직접 실행
 java -jar target/sql2excel-java-1.0.0.jar export -q src/main/resources/queries/sample-queries.json

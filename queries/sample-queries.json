@@ -1,0 +1,20 @@
+{
+  "excel": {
+    "db": "sampleDB",
+    "output": "output/sample_${DATE.KST:yyyyMMddHHmmss}.xlsx",
+    "maxRows": 1000
+  },
+  "vars": {
+    "startDate": "2024-01-01",
+    "endDate": "2024-06-30",
+    "regionList": ["Seoul", "Busan"]
+  },
+  "sheets": [
+    {
+      "name": "Orders",
+      "use": true,
+      "db": "sampleDB",
+      "query": "SELECT * FROM Orders WHERE OrderDate >= '${startDate}' AND OrderDate <= '${endDate}' AND Region IN (${regionList})"
+    }
+  ]
+}

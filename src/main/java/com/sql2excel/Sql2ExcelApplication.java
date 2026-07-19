@@ -17,6 +17,11 @@ import picocli.CommandLine.Command;
 public class Sql2ExcelApplication {
 
     public static void main(String[] args) {
+        if (args == null || args.length == 0) {
+            new MenuRunner("1.0.0").run();
+            return;
+        }
+
         int exitCode = new CommandLine(new Sql2ExcelApplication())
                 .setCaseInsensitiveEnumValuesAllowed(true)
                 .execute(args);

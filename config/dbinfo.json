@@ -9,7 +9,7 @@
     "options": {
       "encrypt": false,
       "trustServerCertificate": true,
-      "connectionTimeout": 30000
+      "connectionTimeout": 3000
     }
   },
   "sampleDB": {
@@ -22,7 +22,7 @@
     "options": {
       "encrypt": false,
       "trustServerCertificate": true,
-      "connectionTimeout": 30000
+      "connectionTimeout": 3000
     }
   },
   "mysqlDB": {
@@ -33,7 +33,7 @@
     "database": "etcdb",
     "port": 3306,
     "options": {
-      "connectionTimeout": 30000
+      "connectionTimeout": 3000
     }
   },
   "mariaDB": {
@@ -41,10 +41,10 @@
     "user": "sahara",
     "password": "1111",
     "server": "localhost",
-    "database": "mydb",
+    "database": "sampledb",
     "port": 3306,
     "options": {
-      "connectionTimeout": 30000
+      "connectionTimeout": 3000
     }
   },
   "postgresDB": {
@@ -55,7 +55,7 @@
     "database": "postgres",
     "port": 5432,
     "options": {
-      "connectionTimeout": 30000
+      "connectionTimeout": 3000
     }
   },
   "sqliteDB": {
@@ -70,7 +70,7 @@
     "port": 1521,
     "serviceName": "xe",
     "options": {
-      "connectionTimeout": 30000
+      "connectionTimeout": 3000
     }
   },
   "tiberoDB": {
@@ -81,7 +81,7 @@
     "port": 8629,
     "serviceName": "tibero",
     "options": {
-      "connectionTimeout": 30000
+      "connectionTimeout": 3000
     }
   }
 }
