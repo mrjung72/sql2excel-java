@@ -81,18 +81,6 @@
             <version>23.4.0.24.05</version>
         </dependency>
 
-        <!-- Tibero JDBC driver must be provided manually because it is not published to Maven Central.
-             Download tibero6-jdbc.jar from your Tibero installation and install it locally:
-             mvn install:install-file -Dfile=tibero6-jdbc.jar -DgroupId=com.tmax.tibero -DartifactId=tibero-jdbc -Dversion=6.0 -Dpackaging=jar
-             then uncomment the dependency below.
-        -->
-        <!--
-        <dependency>
-            <groupId>com.tmax.tibero</groupId>
-            <artifactId>tibero-jdbc</artifactId>
-            <version>6.0</version>
-        </dependency>
-        -->
     </dependencies>
 
     <build>

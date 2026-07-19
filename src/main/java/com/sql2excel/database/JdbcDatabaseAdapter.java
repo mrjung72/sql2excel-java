@@ -32,16 +32,7 @@ public class JdbcDatabaseAdapter implements DatabaseAdapter {
             driverClass = type.getDefaultDriverClass();
         }
 
-        String driverJar = config.getJar();
-        if (driverJar != null && !driverJar.isEmpty()) {
-            DriverLoader.registerDriver(driverJar, driverClass);
-        } else if (driverClass != null && !driverClass.isEmpty()) {
-            try {
-                Class.forName(driverClass);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("JDBC driver not found: " + driverClass, e);
-            }
-        }
+        DriverLoader.loadDriver(config.getJar(), driverClass);
 
         String url = type.buildJdbcUrl(config);
 

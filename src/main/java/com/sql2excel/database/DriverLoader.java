@@ -16,14 +16,19 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DriverLoader {
 
-    private static final Set<String> REGISTERED_JARS = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private static final Set<String> REGISTERED_DRIVERS = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private DriverLoader() {
     }
 
-    public static void registerDriver(String jarPath, String driverClass) throws Exception {
+    public static void loadDriver(String jarPath, String driverClass) throws Exception {
+        if (driverClass == null || driverClass.isEmpty()) {
+            return;
+        }
+
         if (jarPath == null || jarPath.isEmpty()) {
-            throw new IllegalArgumentException("jar path must not be empty");
+            loadDriverFromClasspath(driverClass);
+            return;
         }
 
         Path path = Paths.get(jarPath).toAbsolutePath().normalize();
@@ -31,8 +36,8 @@ public class DriverLoader {
             throw new IllegalArgumentException("JDBC driver jar not found: " + path);
         }
 
-        String absolutePath = path.toString();
-        if (!REGISTERED_JARS.add(absolutePath)) {
+        String key = path.toString() + "|" + driverClass;
+        if (!REGISTERED_DRIVERS.add(key)) {
             return;
         }
 
@@ -45,9 +50,15 @@ public class DriverLoader {
                     .newInstance();
             DriverManager.registerDriver(new DriverShim(driver));
         } catch (Exception e) {
-            REGISTERED_JARS.remove(absolutePath);
+            REGISTERED_DRIVERS.remove(key);
             classLoader.close();
             throw e;
+        }
+    }
+
+    private static void loadDriverFromClasspath(String driverClass) throws ClassNotFoundException {
+        if (REGISTERED_DRIVERS.add("classpath|" + driverClass)) {
+            Class.forName(driverClass);
         }
     }
 }

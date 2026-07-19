@@ -15,7 +15,7 @@
   },
   "sampleDB": {
     "type": "mssql",
-	  "jar": "lib/mssql-jdbc-13.4.0.jre11.jar",
+	"jar": "lib/mssql-jdbc-13.4.0.jre11.jar",
     "user": "sample",
     "password": "sample1234!",
     "server": "localhost",
@@ -29,7 +29,6 @@
   },
   "mysqlDB": {
     "type": "mysql",
-    "jar": "lib/mysql-connector-j-9.6.0.jar",
     "user": "sahara",
     "password": "1111",
     "server": "localhost",
@@ -41,7 +40,6 @@
   },
   "mariaDB": {
     "type": "mariadb",
-    "jar": "lib/mariadb-java-client-3.5.9.jar",
     "user": "sahara",
     "password": "1111",
     "server": "localhost",
@@ -53,7 +51,6 @@
   },
   "postgresDB": {
     "type": "postgresql",
-    "jar": "lib/postgresql-42.7.11.jar",
     "user": "postgres",
     "password": "1111",
     "server": "localhost",
@@ -70,7 +67,6 @@
   },
   "oracleDB": {
     "type": "oracle",
-    "jar": "lib/ojdbc11.jar",
     "user": "c##scott",
     "password": "tiger",
     "server": "localhost",
