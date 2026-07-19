@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queries>
+  <excel db="sampleDB" output="d:/temp/sheet_name_validation_test.xls">
+  </excel>
+  
+  <!-- Valid sheet name -->
+  <sheet name="Valid_Sheet_Name" use="true">
+    <![CDATA[
+      SELECT 'Valid' as Status
+    ]]>
+  </sheet>
+  
+  <!-- Invalid character: backslash -->
+  <sheet name="Invalid\SheetName1" use="true">
+    <![CDATA[
+      SELECT 'Contains backslash' as Status
+    ]]>
+  </sheet>
+  
+  <!-- Invalid character: forward slash -->
+  <sheet name="Invalid/SheetName2" use="true">
+    <![CDATA[
+      SELECT 'Contains forward slash' as Status
+    ]]>
+  </sheet>
+  
+  <!-- Invalid character: colon -->
+  <sheet name="Invalid:SheetName3" use="true">
+    <![CDATA[
+      SELECT 'Contains colon' as Status
+    ]]>
+  </sheet>
+  
+  <!-- Invalid character: asterisk -->
+  <sheet name="Invalid*SheetName4" use="true">
+    <![CDATA[
+      SELECT 'Contains asterisk' as Status
+    ]]>
+  </sheet>
+  
+  <!-- Invalid character: question mark -->
+  <sheet name="Invalid?SheetName5" use="true">
+    <![CDATA[
+      SELECT 'Contains question mark' as Status
+    ]]>
+  </sheet>
+  
+  <!-- Invalid character: brackets -->
+  <sheet name="Invalid[SheetName]6" use="true">
+    <![CDATA[
+      SELECT 'Contains brackets' as Status
+    ]]>
+  </sheet>
+  
+  <!-- Exceeds 31 characters -->
+  <sheet name="This_is_a_very_long_sheet_name_exceeding_31_characters" use="true">
+    <![CDATA[
+      SELECT 'Exceeds 31 characters' as Status
+    ]]>
+  </sheet>
+  
+  <!-- Leading and trailing spaces -->
+  <sheet name="  LeadingTrailingSpaces  " use="true">
+    <![CDATA[
+      SELECT 'Leading trailing spaces' as Status
+    ]]>
+  </sheet>
+  
+  <!-- Valid sheet name (with Korean) -->
+  <sheet name="Korean_Sheet_Name_Test" use="true">
+    <![CDATA[
+      SELECT 'Korean Valid' as Status
+    ]]>
+  </sheet>
+  
+  <!-- Valid sheet name (with numbers) -->
+  <sheet name="Sheet_123" use="true">
+    <![CDATA[
+      SELECT 'Contains numbers' as Status
+    ]]>
+  </sheet>
+</queries>

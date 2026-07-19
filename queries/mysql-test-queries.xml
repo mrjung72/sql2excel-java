@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queries>
+  <!-- Excel 파일 설정 -->
+  <excel 
+    output="output/mysql_test_report_${DATE.KST:YYYYMMDD_HHmmss}.xlsx" 
+    db="mysql"
+    style="modern">
+  </excel>
+
+  <!-- 시트 1: 데이터베이스 목록 -->
+  <sheet name="Database List" db="mysql">
+    <query>
+      SELECT 
+        SCHEMA_NAME as database_name,
+        DEFAULT_CHARACTER_SET_NAME as charset,
+        DEFAULT_COLLATION_NAME as collation,
+        '${DATE.KST:YYYY-MM-DD HH:mm:ss}' as report_date
+      FROM information_schema.SCHEMATA
+      ORDER BY SCHEMA_NAME
+    </query>
+  </sheet>
+
+  <!-- 시트 2: 테이블 목록 -->
+  <sheet name="Tables" db="mysql">
+    <query>
+      SELECT 
+        TABLE_SCHEMA as database_name,
+        TABLE_NAME as table_name,
+        TABLE_TYPE as table_type,
+        ENGINE as engine,
+        TABLE_ROWS as row_count,
+        ROUND(DATA_LENGTH / 1024 / 1024, 2) as data_size_mb,
+        ROUND(INDEX_LENGTH / 1024 / 1024, 2) as index_size_mb,
+        CREATE_TIME as created_at
+      FROM information_schema.TABLES
+      WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
+      ORDER BY TABLE_SCHEMA, TABLE_NAME
+      LIMIT 100
+    </query>
+  </sheet>
+
+  <!-- 시트 3: 사용자 목록 -->
+  <sheet name="Users" db="mysql">
+    <query>
+      SELECT 
+        User as username,
+        Host as host,
+        '${DATE.UTC:YYYY-MM-DD}' as report_date_utc,
+        '${DATE.KST:YYYY-MM-DD}' as report_date_kst
+      FROM mysql.user
+      ORDER BY User, Host
+    </query>
+  </sheet>
+
+  <!-- 시트 4: 변수 및 상태 -->
+  <sheet name="System Variables" db="mysql">
+    <query>
+      SELECT 
+        VARIABLE_NAME as variable_name,
+        VARIABLE_VALUE as value
+      FROM information_schema.GLOBAL_VARIABLES
+      WHERE VARIABLE_NAME IN (
+        'version',
+        'version_comment',
+        'max_connections',
+        'character_set_server',
+        'collation_server',
+        'innodb_buffer_pool_size',
+        'datadir'
+      )
+      ORDER BY VARIABLE_NAME
+    </query>
+  </sheet>
+
+  <!-- 시트 5: MariaDB 테스트 (MariaDB 전용) -->
+  <sheet name="MariaDB Info" db="mariaDB">
+    <query>
+      SELECT 
+        TABLE_SCHEMA as database_name,
+        COUNT(*) as table_count,
+        SUM(TABLE_ROWS) as total_rows,
+        ROUND(SUM(DATA_LENGTH) / 1024 / 1024, 2) as total_data_mb,
+        '${DATE:YYYY년 MM월 DD일 HH시 mm분}' as report_time
+      FROM information_schema.TABLES
+      WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
+      GROUP BY TABLE_SCHEMA
+      ORDER BY total_data_mb DESC
+    </query>
+  </sheet>
+
+  <!-- 시트 6: MSSQL + MySQL 혼합 테스트 -->
+  <sheet name="MSSQL Databases" db="sampleDB">
+    <query>
+      SELECT TOP 10
+        name as database_name,
+        database_id,
+        create_date,
+        '${DATE.KST:YYYY-MM-DD HH:mm:ss}' as report_date
+      FROM sys.databases
+      ORDER BY name
+    </query>
+  </sheet>
+
+  <!-- 시트 7: 다중 타임존 예제 -->
+  <sheet name="Timezone Examples" db="mysql">
+    <query>
+      SELECT 
+        'Seoul (KST)' as timezone,
+        '${DATE.KST:YYYY-MM-DD HH:mm:ss}' as datetime
+      UNION ALL
+      SELECT 
+        'UTC',
+        '${DATE.UTC:YYYY-MM-DD HH:mm:ss}'
+      UNION ALL
+      SELECT 
+        'New York (EST)',
+        '${DATE.EST:YYYY-MM-DD HH:mm:ss}'
+      UNION ALL
+      SELECT 
+        'Tokyo (JST)',
+        '${DATE.JST:YYYY-MM-DD HH:mm:ss}'
+      UNION ALL
+      SELECT 
+        'Local Time',
+        '${DATE:YYYY-MM-DD HH:mm:ss}'
+    </query>
+  </sheet>
+
+</queries>
+

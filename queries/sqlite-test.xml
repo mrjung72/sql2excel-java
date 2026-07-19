@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queries>
+  <!-- SQLite 테스트 쿼리 -->
+  <excel 
+    output="output/sqlite_report_${DATE:YYYYMMDD}.xlsx" 
+    db="sqliteDB"
+    style="professional">
+  </excel>
+
+  <!-- 시트 1: SQLite 버전 정보 -->
+  <sheet name="Version Info" db="sqliteDB">
+    <query>
+      SELECT 
+        sqlite_version() as sqlite_version,
+        '${DATE.KST:YYYY년 MM월 DD일 HH시 mm분}' as report_date_kst,
+        '${DATE:YYYY-MM-DD HH:mm:ss}' as report_date_local
+    </query>
+  </sheet>
+
+  <!-- 시트 2: 테이블 목록 -->
+  <sheet name="Tables" db="sqliteDB">
+    <query>
+      SELECT 
+        name as table_name,
+        type as object_type,
+        sql as create_sql
+      FROM sqlite_master
+      WHERE type IN ('table', 'view')
+        AND name NOT LIKE 'sqlite_%'
+      ORDER BY type, name
+      LIMIT 50
+    </query>
+  </sheet>
+
+  <!-- 시트 3: 타임존 예제 -->
+  <sheet name="Timezone Examples" db="sqliteDB">
+    <query>
+      SELECT 
+        'Seoul (KST)' as timezone,
+        '${DATE.KST:YYYY-MM-DD HH:mm:ss}' as datetime
+      UNION ALL
+      SELECT 
+        'UTC',
+        '${DATE.UTC:YYYY-MM-DD HH:mm:ss}'
+      UNION ALL
+      SELECT 
+        'Tokyo (JST)',
+        '${DATE.JST:YYYY-MM-DD HH:mm:ss}'
+      UNION ALL
+      SELECT 
+        'Local Time',
+        '${DATE:YYYY-MM-DD HH:mm:ss}'
+    </query>
+  </sheet>
+
+  <!-- 시트 4: 간단한 테스트 데이터 -->
+  <sheet name="Test Data" db="sqliteDB">
+    <query>
+      SELECT 
+        1 as id,
+        'Test 1' as name,
+        datetime('now') as created_at
+      UNION ALL
+      SELECT 
+        2,
+        'Test 2',
+        datetime('now', '-1 day')
+      UNION ALL
+      SELECT 
+        3,
+        'Test 3',
+        datetime('now', '-7 day')
+    </query>
+  </sheet>
+
+</queries>
+

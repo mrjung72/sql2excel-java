@@ -1,0 +1,250 @@
+<queries>
+  <excel db="sourceDB" output="d:/temp/backup_data/${DATE:yyyyMMdd}.csv">
+  </excel>
+
+  <sheet name="activity_logs" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.activity_logs
+      ]]>
+  </sheet>
+
+  <sheet name="companies" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.companies
+      ]]>
+  </sheet>
+
+  <sheet name="employees" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.employees
+      ]]>
+  </sheet>
+
+  <sheet name="product_reviews" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.product_reviews
+      ]]>
+  </sheet>
+
+  <sheet name="entity_relationships" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.entity_relationships
+      ]]>
+  </sheet>
+
+  <sheet name="approval_requests" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.approval_requests
+      ]]>
+  </sheet>
+
+  <sheet name="audit_logs" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.audit_logs
+      ]]>
+  </sheet>
+
+  <sheet name="status_codes" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.status_codes
+      ]]>
+  </sheet>
+
+  <sheet name="approval_relations" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.approval_relations
+      ]]>
+  </sheet>
+
+  <sheet name="migration_log" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.migration_log
+      ]]>
+  </sheet>
+
+  <sheet name="validation_errors" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.validation_errors
+      ]]>
+  </sheet>
+
+  <sheet name="users" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.users
+      ]]>
+  </sheet>
+
+  <sheet name="departments" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.departments
+      ]]>
+  </sheet>
+
+  <sheet name="categories" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.categories
+      ]]>
+  </sheet>
+
+  <sheet name="products" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.products
+      ]]>
+  </sheet>
+
+  <sheet name="audit_table" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.audit_table
+      ]]>
+  </sheet>
+
+  <sheet name="orders" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.orders
+      ]]>
+  </sheet>
+
+  <sheet name="order_items" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.order_items
+      ]]>
+  </sheet>
+
+  <sheet name="customers" use="true">
+      <![CDATA[
+        SELECT * FROM sql2db.customers
+      ]]>
+  </sheet>
+
+</queries>
+<queries>
+  <excel db="sourceDB" output="d:/temp/backup_data/${DATE:yyyyMMdd}.csv">
+  </excel>
+  
+  <sheet name="activity_logs" use="true">
+    <![CDATA[
+      SELECT * FROM activity_logs
+    ]]>
+  </sheet>
+
+  <sheet name="companies" use="true">
+    <![CDATA[
+      SELECT * FROM companies
+    ]]>
+  </sheet>
+
+  <sheet name="employees" use="true">
+    <![CDATA[
+      SELECT * FROM employees
+    ]]>
+  </sheet>
+
+  <sheet name="product_reviews" use="true">
+    <![CDATA[
+      SELECT * FROM product_reviews
+    ]]>
+  </sheet>
+
+  <sheet name="entity_relationships" use="true">
+    <![CDATA[
+      SELECT * FROM entity_relationships
+    ]]>
+  </sheet>
+
+  <sheet name="approval_requests" use="true">
+    <![CDATA[
+      SELECT * FROM approval_requests
+    ]]>
+  </sheet>
+
+  <sheet name="audit_logs" use="true">
+    <![CDATA[
+      SELECT * FROM audit_logs
+    ]]>
+  </sheet>
+
+  <sheet name="status_codes" use="true">
+    <![CDATA[
+      SELECT * FROM status_codes
+    ]]>
+  </sheet>
+
+  <sheet name="approval_relations" use="true">
+    <![CDATA[
+      SELECT * FROM approval_relations
+    ]]>
+  </sheet>
+
+  <sheet name="migration_log" use="true">
+    <![CDATA[
+      SELECT * FROM migration_log
+    ]]>
+  </sheet>
+
+  <sheet name="validation_errors" use="true">
+    <![CDATA[
+      SELECT * FROM validation_errors
+    ]]>
+  </sheet>
+
+  <sheet name="example_table" use="true">
+    <![CDATA[
+      SELECT * FROM example_table
+    ]]>
+  </sheet>
+
+  <sheet name="users" use="true">
+    <![CDATA[
+      SELECT * FROM users
+    ]]>
+  </sheet>
+
+  <sheet name="departments" use="true">
+    <![CDATA[
+      SELECT * FROM departments
+    ]]>
+  </sheet>
+
+  <sheet name="example_table_backup" use="true">
+    <![CDATA[
+      SELECT * FROM example_table_backup
+    ]]>
+  </sheet>
+
+  <sheet name="categories" use="true">
+    <![CDATA[
+      SELECT * FROM categories
+    ]]>
+  </sheet>
+
+  <sheet name="products" use="true">
+    <![CDATA[
+      SELECT * FROM products
+    ]]>
+  </sheet>
+
+  <sheet name="audit_table" use="true">
+    <![CDATA[
+      SELECT * FROM audit_table
+    ]]>
+  </sheet>
+
+  <sheet name="orders" use="true">
+    <![CDATA[
+      SELECT * FROM orders
+    ]]>
+  </sheet>
+
+  <sheet name="order_items" use="true">
+    <![CDATA[
+      SELECT * FROM order_items
+    ]]>
+  </sheet>
+
+  <sheet name="customers" use="true">
+    <![CDATA[
+      SELECT * FROM customers
+    ]]>
+  </sheet>
+
+</queries>

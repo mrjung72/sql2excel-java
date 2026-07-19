@@ -1,0 +1,11 @@
+<queries>
+  <excel db="sourceDB" output="d:/temp/backup_procedure/${DATE:yyyyMMdd}.sql">
+  </excel>
+
+  <sheet name="sp_search_users" use="true">
+      <![CDATA[
+        exec sp_helptext 'sp_search_users'
+      ]]>
+  </sheet>
+
+</queries>

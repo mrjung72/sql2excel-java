@@ -1,0 +1,34 @@
+{
+  "excel": {
+    "output": "output/mysql_simple_${DATE.KST:YYYYMMDD}.xlsx",
+    "db": "mysql",
+    "style": "default"
+  },
+  "globalVars": {
+    "reportTitle": "MySQL Database Report",
+    "reportDate": "2024"
+  },
+  "sheets": [
+    {
+      "name": "Database Info",
+      "db": "mysql",
+      "query": "SELECT SCHEMA_NAME as db_name, DEFAULT_CHARACTER_SET_NAME as charset, DEFAULT_COLLATION_NAME as collation FROM information_schema.SCHEMATA ORDER BY SCHEMA_NAME LIMIT 20"
+    },
+    {
+      "name": "MySQL Version",
+      "db": "mysql",
+      "query": "SELECT @@version as version, @@version_comment as comment, NOW() as `current_time`"
+    },
+    {
+      "name": "Table Statistics",
+      "db": "mysql",
+      "query": "SELECT TABLE_SCHEMA as db_name, COUNT(*) as table_count, SUM(TABLE_ROWS) as total_rows FROM information_schema.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys') GROUP BY TABLE_SCHEMA"
+    },
+    {
+      "name": "MSSQL Test",
+      "db": "sampleDB",
+      "query": "SELECT TOP 5 name, database_id, create_date FROM sys.databases ORDER BY name"
+    }
+  ]
+}
+

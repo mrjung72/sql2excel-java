@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queries>
+  <!-- PostgreSQL 테스트 쿼리 -->
+  <excel 
+    output="output/postgresql_report_${DATE.KST:YYYYMMDD}.xlsx" 
+    db="postgresDB"
+    style="modern">
+  </excel>
+
+  <!-- 시트 1: 데이터베이스 정보 -->
+  <sheet name="Database Info" db="postgresDB">
+    <query>
+      SELECT 
+        version() as postgres_version,
+        current_database() as database_name,
+        current_user as current_user,
+        '${DATE.KST:YYYY-MM-DD HH:mm:ss}' as report_date
+    </query>
+  </sheet>
+
+  <!-- 시트 2: 테이블 목록 -->
+  <sheet name="Tables" db="postgresDB">
+    <query>
+      SELECT 
+        schemaname as schema_name,
+        tablename as table_name,
+        '${DATE.UTC:YYYY-MM-DD HH:mm:ss}' as report_date_utc
+      FROM pg_tables
+      WHERE schemaname NOT IN ('pg_catalog', 'information_schema')
+      ORDER BY schemaname, tablename
+      LIMIT 50
+    </query>
+  </sheet>
+
+  <!-- 시트 3: 다중 타임존 예제 -->
+  <sheet name="Timezone Examples" db="postgresDB">
+    <query>
+      SELECT 
+        '서울 (KST)' as timezone,
+        '${DATE.KST:YYYY-MM-DD HH:mm:ss}' as datetime
+      UNION ALL
+      SELECT 
+        'UTC',
+        '${DATE.UTC:YYYY-MM-DD HH:mm:ss}'
+      UNION ALL
+      SELECT 
+        '뉴욕 (EST)',
+        '${DATE.EST:YYYY-MM-DD HH:mm:ss}'
+      UNION ALL
+      SELECT 
+        '도쿄 (JST)',
+        '${DATE.JST:YYYY-MM-DD HH:mm:ss}'
+      UNION ALL
+      SELECT 
+        'Local Time',
+        '${DATE:YYYY-MM-DD HH:mm:ss}'
+    </query>
+  </sheet>
+
+  <!-- 시트 4: 데이터베이스 크기 -->
+  <sheet name="Database Size" db="postgresDB">
+    <query>
+      SELECT 
+        datname as database_name,
+        pg_size_pretty(pg_database_size(datname)) as size
+      FROM pg_database
+      WHERE datistemplate = false
+      ORDER BY pg_database_size(datname) DESC
+      LIMIT 20
+    </query>
+  </sheet>
+
+  <!-- 시트 5: 현재 활동 -->
+  <sheet name="Current Activity" db="postgresDB">
+    <query>
+      SELECT 
+        pid as process_id,
+        usename as username,
+        application_name,
+        client_addr as client_address,
+        state,
+        query_start,
+        state_change
+      FROM pg_stat_activity
+      WHERE pid != pg_backend_pid()
+      ORDER BY query_start DESC
+      LIMIT 30
+    </query>
+  </sheet>
+
+</queries>
+

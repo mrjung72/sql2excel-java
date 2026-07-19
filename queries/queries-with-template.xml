@@ -1,0 +1,64 @@
+<queries>
+  <excel db="sampleDB" output="d:/temp/sales_summary_template_${DB_NAME}_${DATE:yyyyMMddhhmmss}.xlsx" maxRows="20" style="business">
+    <!-- Global style template ID (default: default) -->
+    <!-- Individual styles can be specified per sheet -->
+    <!-- Available templates: default, modern, dark, colorful, minimal, business, premium -->
+  </excel>
+  <vars>
+    <var name="envType">Production</var>
+    <var name="startDate">2024-01-01</var>
+    <var name="endDate">2024-06-30</var>
+    <var name="regionList">["Seoul", "Busan"]</var>
+    <var name="statusList">["ACTIVE", "PENDING", "COMPLETED"]</var>
+    <var name="categoryIds">[1, 2, 3, 5]</var>
+    <var name="maxRows">1000</var>
+  </vars>
+  <sheet name="${envType}_Order_List" use="true" aggregateColumn="PaymentMethod" maxRows="10" db="sampleDB" style="modern">
+    <!-- Sheet-specific style: modern -->
+    <![CDATA[
+      SELECT 
+        OrderNumber as OrderNumber,
+        FORMAT(OrderDate, 'yyyy-MM-dd') as OrderDate,
+        OrderStatus as OrderStatus,
+        PaymentStatus as PaymentStatus,
+        FORMAT(TotalAmount, 'N0') as TotalAmount,
+        PaymentMethod as PaymentMethod
+      FROM SampleDB.dbo.Orders
+      WHERE OrderDate >= '${startDate}' AND OrderDate <= '${endDate}'
+      ORDER BY OrderDate DESC
+    ]]>
+  </sheet>
+  <sheet name="Customer_List" use="true" aggregateColumn="Region">
+    <!-- No sheet-specific style: uses global style (business) -->
+    <![CDATA[
+      SELECT 
+        CustomerCode as CustomerCode,
+        CustomerName as CustomerName,
+        ContactName as ContactName,
+        City as City,
+        Region as Region,
+        CustomerType as CustomerType,
+        FORMAT(CreditLimit, 'N0') as CreditLimit
+      FROM SampleDB.dbo.Customers
+      WHERE Region IN (${regionList}) AND IsActive = 1
+      ORDER BY CreditLimit DESC
+    ]]>
+  </sheet>
+  <sheet name="Product_List" use="true" aggregateColumn="Category" style="colorful">
+    <!-- Sheet-specific style: colorful -->
+    <![CDATA[
+      SELECT 
+        ProductID as ProductID,
+        ProductName as ProductName,
+        CategoryName as Category,
+        FORMAT(UnitPrice, 'N0') as UnitPrice,
+        UnitsInStock as UnitsInStock,
+        Discontinued as Discontinued
+      FROM SampleDB.dbo.Products p
+      INNER JOIN SampleDB.dbo.Categories c ON p.CategoryID = c.CategoryID
+      WHERE p.CategoryID IN (${categoryIds})
+      ORDER BY c.CategoryName, p.ProductName
+    ]]>
+  </sheet>
+</queries>
+

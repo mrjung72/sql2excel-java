@@ -1,0 +1,82 @@
+<queries>
+  <excel db="oracleDB" output="d:/temp/sales_summary_${DATE.KST:yyyyMMddhhmmss}.xlsx" maxRows="200" style="modern">
+    <!-- Style template ID (default: default) -->
+    <!-- Available templates: default, modern, dark, colorful, minimal, business, premium -->
+    <!-- Can be overridden with individual style attributes if needed -->
+  </excel>
+  <vars>
+    <var name="envType">Production</var>
+    <var name="startDate">2024-01-01</var>
+    <var name="endDate">2024-06-30</var>
+    <var name="regionList">["Seoul", "Busan"]</var>
+    <var name="statusList">["Pending", "Shipped", "Delivered"]</var>
+    <var name="categoryIds">[1, 2, 3, 5]</var>
+    <var name="maxRows">1000</var>
+  </vars>
+  <sheet name="${envType}_Order_List" use="true" aggregateColumn="PaymentMethod" maxRows="100" db="oracleDB">
+    <![CDATA[
+      SELECT 
+        OrderNumber as OrderNumber,
+        OrderDate,
+        OrderStatus as OrderStatus,
+        PaymentStatus as PaymentStatus,
+        PaymentMethod as PaymentMethod
+      FROM Orders
+      WHERE OrderDate >= '${startDate}' AND OrderDate <= '${endDate}'
+      ORDER BY OrderDate DESC
+    ]]>
+  </sheet>
+  <sheet name="Customer_List" use="true" aggregateColumn="Region" style="dark" db="sampleDB">
+    <![CDATA[
+      SELECT *
+      FROM Customers
+    ]]>
+  </sheet>
+  <sheet name="Customer_Details_Regional_Statistics_Summary" use="true" db="postgresDB">
+    <![CDATA[
+      SELECT 
+        o.OrderNumber as OrderNumber,
+        c.CustomerName as CustomerName,
+        p.ProductName as ProductName,
+        p.UnitPrice,
+        od.Quantity as Quantity,
+        od.LineTotal
+      FROM Orders o
+      INNER JOIN Customers c ON o.CustomerID = c.CustomerID
+      INNER JOIN OrderDetails od ON o.OrderID = od.OrderID
+      INNER JOIN Products p ON od.ProductID = p.ProductID
+      WHERE o.OrderDate >= '${startDate}' AND o.OrderDate <= '${endDate}'
+      ORDER BY o.OrderDate DESC
+    ]]>
+  </sheet>
+  <sheet name="Wildcard_Customer" use="true" exceptColumns="IsActive,CreatedDate,LastUpdated" db="mariaDB">
+    <![CDATA[
+      SELECT c.*
+      FROM Orders o
+      INNER JOIN Customers c ON o.CustomerID = c.CustomerID
+      INNER JOIN OrderDetails od ON o.OrderID = od.OrderID
+      WHERE o.OrderDate >= '${startDate}' AND o.OrderDate <= '${endDate}'
+      ORDER BY o.OrderDate DESC
+    ]]>
+  </sheet>
+  <sheet name="Wildcard_Order" use="true" exceptColumns="OrderDate,RequiredDate,ShippedDate" db="mariaDB">
+    <![CDATA[
+      SELECT o.*
+      FROM Orders o
+      INNER JOIN Customers c ON o.CustomerID = c.CustomerID
+      INNER JOIN OrderDetails od ON o.OrderID = od.OrderID
+      WHERE o.OrderDate >= '${startDate}' AND o.OrderDate <= '${endDate}'
+      ORDER BY o.OrderDate DESC
+    ]]>
+  </sheet>
+  <sheet name="Orders_By_Status" use="true" aggregateColumn="OrderStatus" exceptColumns="OrderDate,RequiredDate,ShippedDate">
+    <![CDATA[
+      SELECT *
+      FROM Orders
+      WHERE OrderDate >= '${startDate}' 
+        AND OrderDate <= '${endDate}'
+        AND OrderStatus IN (${statusList})
+      ORDER BY OrderDate DESC
+    ]]>
+  </sheet>
+</queries> 

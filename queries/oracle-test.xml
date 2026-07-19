@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queries>
+  <excel 
+    output="output/oracle_test_report_${DATE.KST:YYYYMMDD_HHmmss}.xlsx" 
+    db="oracleDB"
+    style="modern">
+  </excel>
+
+  <sheet name="Session" db="oracleDB">
+    <query>
+      SELECT USER as username, SYS_CONTEXT('USERENV','DB_NAME') as db_name, SYSDATE as sysdate FROM dual
+    </query>
+  </sheet>
+
+  <sheet name="Tables" db="oracleDB">
+    <query>
+      SELECT 
+        owner,
+        table_name,
+        num_rows,
+        blocks,
+        to_char(last_analyzed,'YYYY-MM-DD HH24:MI:SS') as last_analyzed
+      FROM all_tables
+      WHERE owner = USER
+      ORDER BY table_name
+      FETCH FIRST 50 ROWS ONLY
+    </query>
+  </sheet>
+
+  <sheet name="Customers" db="oracleDB">
+    <query>
+      SELECT 
+        c.CustomerID,
+        c.CustomerCode,
+        c.CustomerName,
+        c.City,
+        c.Region,
+        c.Country,
+        c.CreditLimit,
+        c.IsActive,
+        to_char(c.CreatedDate, 'YYYY-MM-DD HH24:MI:SS') as CreatedDate
+      FROM Customers c
+      ORDER BY c.CustomerID
+      FETCH FIRST 100 ROWS ONLY
+    </query>
+  </sheet>
+</queries>

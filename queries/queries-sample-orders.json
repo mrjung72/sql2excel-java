@@ -1,0 +1,62 @@
+{
+  "excel": {
+    "db": "oracleDB",
+    "output": "output/sales_summary_2024.xlsx",
+    "maxRows": 1500,
+    "header": {
+      "font": { "name": "Arial", "size": 12, "color": "FFFFFF", "bold": true },
+      "fill": { "color": "4F81BD" },
+      "colwidths": { "min": 10, "max": 30 },
+      "alignment": { "horizontal": "center", "vertical": "middle" },
+      "border": { "all": { "style": "thin", "color": "000000" } }
+    },
+    "body": {
+      "font": { "name": "Arial", "size": 11, "color": "000000", "bold": false },
+      "fill": { "color": "FFFFCC" },
+      "alignment": { "horizontal": "center", "vertical": "middle" },
+      "border": { "all": { "style": "thin", "color": "000000" } }
+    }
+  },
+  "vars": {
+    "startDate": "2024-01-01",
+    "endDate": "2024-06-30",
+    "regionList": ["Seoul", "Busan"],
+    "statusList": ["ACTIVE", "PENDING", "COMPLETED"],
+    "categoryIds": [1, 2, 3, 5],
+    "maxRows": 1000
+  },
+  "sheets": [
+    {
+      "name": "Orders",
+      "use": true,
+      "maxRows": 1000,
+      "aggregateColumn": "OrderStatus",
+      "db": "sampleDB",
+      "query": "SELECT * FROM Orders WHERE OrderDate >= '${startDate}' AND OrderDate <= '${endDate}'"
+    },
+    {
+      "name": "Customers",
+      "use": false,
+      "maxRows": 500,
+      "aggregateColumn": "Region",
+      "db": "erpDB",
+      "query": "SELECT * FROM Customers WHERE region IN (${regionList})"
+    },
+    {
+      "name": "Orders_By_Status",
+      "use": false,
+      "maxRows": 800,
+      "aggregateColumn": "OrderStatus",
+      "db": "sampleDB",
+      "query": "SELECT OrderNumber, OrderDate, OrderStatus, PaymentStatus, TotalAmount FROM Orders WHERE OrderDate >= '${startDate}' AND OrderDate <= '${endDate}' AND OrderStatus IN (${statusList})"
+    },
+    {
+      "name": "Products_By_Category",
+      "use": false,
+      "maxRows": 600,
+      "aggregateColumn": "CategoryName",
+      "db": "sampleDB",
+      "query": "SELECT p.ProductID, p.ProductName, c.CategoryName, p.UnitPrice FROM Products p INNER JOIN Categories c ON p.CategoryID = c.CategoryID WHERE p.CategoryID IN (${categoryIds})"
+    }
+  ]
+} 

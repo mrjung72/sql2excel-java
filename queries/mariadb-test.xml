@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queries>
+  <!-- MariaDB 전용 테스트 쿼리 -->
+  <excel 
+    output="output/mariadb_report_${DATE:YYYYMMDD}.xlsx" 
+    db="mariaDB"
+    style="professional">
+  </excel>
+
+  <sheet name="현재 시간 (다중 타임존)">
+    <query>
+      SELECT 
+        '서울' as city,
+        '${DATE.KST:YYYY년 MM월 DD일 HH시 mm분 ss초}' as time
+      UNION ALL
+      SELECT '뉴욕', '${DATE.EST:YYYY-MM-DD HH:mm:ss}'
+      UNION ALL
+      SELECT '런던', '${DATE.GMT:YYYY-MM-DD HH:mm:ss}'
+      UNION ALL
+      SELECT '도쿄', '${DATE.JST:YYYY-MM-DD HH:mm:ss}'
+      UNION ALL
+      SELECT '시드니', '${DATE.AEST:YYYY-MM-DD HH:mm:ss}'
+    </query>
+  </sheet>
+
+  <sheet name="데이터베이스 정보">
+    <query>
+      SELECT 
+        SCHEMA_NAME as '데이터베이스명',
+        DEFAULT_CHARACTER_SET_NAME as '문자셋',
+        DEFAULT_COLLATION_NAME as '콜레이션'
+      FROM information_schema.SCHEMATA
+      WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
+      ORDER BY SCHEMA_NAME
+    </query>
+  </sheet>
+
+  <sheet name="테이블 크기">
+    <query>
+      SELECT 
+        TABLE_SCHEMA as '데이터베이스',
+        TABLE_NAME as '테이블명',
+        TABLE_ROWS as '행수',
+        ROUND(DATA_LENGTH / 1024 / 1024, 2) as '데이터크기_MB',
+        ROUND(INDEX_LENGTH / 1024 / 1024, 2) as '인덱스크기_MB',
+        ROUND((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024, 2) as '총크기_MB'
+      FROM information_schema.TABLES
+      WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
+      ORDER BY (DATA_LENGTH + INDEX_LENGTH) DESC
+      LIMIT 50
+    </query>
+  </sheet>
+
+  <sheet name="시스템 변수">
+    <query>
+      SELECT 
+        VARIABLE_NAME as '변수명',
+        VARIABLE_VALUE as '값'
+      FROM information_schema.GLOBAL_VARIABLES
+      WHERE VARIABLE_NAME LIKE '%version%'
+         OR VARIABLE_NAME LIKE '%character%'
+         OR VARIABLE_NAME LIKE '%collation%'
+      ORDER BY VARIABLE_NAME
+      LIMIT 30
+    </query>
+  </sheet>
+
+</queries>
+
