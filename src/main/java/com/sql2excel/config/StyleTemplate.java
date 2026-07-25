@@ -4,13 +4,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class StyleTemplate {
 
-    private static final Map<String, Style> TEMPLATES = new HashMap<>();
+    private static final Map<String, Style> TEMPLATES = new LinkedHashMap<>();
 
     public static void load(Path path) throws IOException {
         TEMPLATES.clear();
@@ -57,6 +60,20 @@ public class StyleTemplate {
         if (sheet.getBody() == null && !style.body.isEmpty()) {
             sheet.setBody(new HashMap<>(style.body));
         }
+    }
+
+    public static List<String> getStyleNames() {
+        return new ArrayList<>(TEMPLATES.keySet());
+    }
+
+    public static Map<String, Object> getStyleHeader(String name) {
+        Style style = TEMPLATES.get(name != null ? name.toLowerCase() : "");
+        return style != null ? style.header : null;
+    }
+
+    public static Map<String, Object> getStyleBody(String name) {
+        Style style = TEMPLATES.get(name != null ? name.toLowerCase() : "");
+        return style != null ? style.body : null;
     }
 
     private static class Style {

@@ -10,6 +10,7 @@ import picocli.CommandLine.Command;
         description = "SQL query results to Excel exporter (Java version)",
         subcommands = {
                 ExportCommand.class,
+                ExportStylesCommand.class,
                 ListDbsCommand.class,
                 ValidateCommand.class
         }
