@@ -41,7 +41,7 @@ public class ConfigLoader {
     }
 
     public QueryConfig loadQueryConfig(Path path) throws IOException {
-        StyleTemplate.load(Path.of("conf/excel-style.json"));
+        StyleTemplate.load(Path.of("config/excel-style.json"));
         String name = path.getFileName().toString().toLowerCase();
         if (name.endsWith(".json")) {
             QueryConfig qc = objectMapper.readValue(path.toFile(), QueryConfig.class);
