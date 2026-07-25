@@ -3,32 +3,16 @@ package com.sql2excel.database;
 import com.sql2excel.config.DatabaseConfig;
 
 public enum DatabaseType {
-    MSSQL("com.microsoft.sqlserver.jdbc.SQLServerDriver"),
-    SQLSERVER("com.microsoft.sqlserver.jdbc.SQLServerDriver"),
-    MYSQL("com.mysql.cj.jdbc.Driver"),
-    MARIADB("org.mariadb.jdbc.Driver"),
-    POSTGRESQL("org.postgresql.Driver"),
-    POSTGRES("org.postgresql.Driver"),
-    PG("org.postgresql.Driver"),
-    SQLITE("org.sqlite.JDBC"),
-    ORACLE("oracle.jdbc.OracleDriver"),
-    ORACLEDB("oracle.jdbc.OracleDriver"),
-    OCI("oracle.jdbc.OracleDriver"),
-    TIBERO("com.tmax.tibero.jdbc.TbDriver"),
-    TIBERO6("com.tmax.tibero.jdbc.TbDriver"),
-    TIBERO7("com.tmax.tibero.jdbc.TbDriver");
+    MSSQL,
+    MYSQL,
+    MARIADB,
+    POSTGRESQL,
+    SQLITE,
+    ORACLE,
+    TIBERO;
 	
 	
 
-    private final String defaultDriverClass;
-
-    DatabaseType(String defaultDriverClass) {
-        this.defaultDriverClass = defaultDriverClass;
-    }
-
-    public String getDefaultDriverClass() {
-        return defaultDriverClass;
-    }
 
     public static DatabaseType fromString(String type) {
         if (type == null || type.isEmpty()) {
@@ -52,24 +36,17 @@ public enum DatabaseType {
 
         switch (this) {
             case MSSQL:
-            case SQLSERVER:
                 return buildMssqlUrl(config);
             case MYSQL:
             case MARIADB:
                 return buildMysqlUrl(config);
             case POSTGRESQL:
-            case POSTGRES:
-            case PG:
                 return buildPostgresUrl(config);
             case SQLITE:
                 return buildSqliteUrl(config);
             case ORACLE:
-            case ORACLEDB:
-            case OCI:
                 return buildOracleUrl(config);
             case TIBERO:
-            case TIBERO6:
-            case TIBERO7:
                 return buildTiberoUrl(config);
             default:
                 throw new IllegalStateException("No URL builder for " + this);
@@ -168,11 +145,7 @@ public enum DatabaseType {
     public String getTestQuery() {
         switch (this) {
             case ORACLE:
-            case ORACLEDB:
-            case OCI:
             case TIBERO:
-            case TIBERO6:
-            case TIBERO7:
                 return "SELECT 1 FROM dual";
             default:
                 return "SELECT 1";
@@ -189,20 +162,13 @@ public enum DatabaseType {
         }
         switch (this) {
             case MSSQL:
-            case SQLSERVER:
                 return addTopClause(sql, maxRows);
             case ORACLE:
-            case ORACLEDB:
-            case OCI:
             case TIBERO:
-            case TIBERO6:
-            case TIBERO7:
                 return sql.trim() + " FETCH FIRST " + maxRows + " ROWS ONLY";
             case MYSQL:
             case MARIADB:
             case POSTGRESQL:
-            case POSTGRES:
-            case PG:
             case SQLITE:
             default:
                 return sql.trim() + " LIMIT " + maxRows;
@@ -236,16 +202,10 @@ public enum DatabaseType {
         String replacement;
         switch (this) {
             case ORACLE:
-            case ORACLEDB:
-            case OCI:
             case TIBERO:
-            case TIBERO6:
-            case TIBERO7:
                 replacement = "SYSTIMESTAMP";
                 break;
             case POSTGRESQL:
-            case POSTGRES:
-            case PG:
                 replacement = "NOW()";
                 break;
             case MYSQL:
@@ -256,7 +216,6 @@ public enum DatabaseType {
                 replacement = "datetime('now')";
                 break;
             case MSSQL:
-            case SQLSERVER:
             default:
                 replacement = "GETDATE()";
                 break;

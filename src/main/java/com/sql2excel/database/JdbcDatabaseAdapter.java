@@ -29,7 +29,7 @@ public class JdbcDatabaseAdapter implements DatabaseAdapter {
         }
         String driverClass = config.getDriverClass();
         if (driverClass == null || driverClass.isEmpty()) {
-            driverClass = type.getDefaultDriverClass();
+            throw new IllegalArgumentException("driverClass is not defined in dbinfo.json for type: " + type);
         }
 
         DriverLoader.loadDriver(config.getJar(), driverClass);

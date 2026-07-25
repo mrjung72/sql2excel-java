@@ -1,6 +1,7 @@
 {
   "sourceDB": {
     "type": "mssql",
+    "driverClass": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
     "jar": "lib/mssql-jdbc-13.4.0.jre11.jar",
     "user": "sample",
     "password": "sample1234!",
@@ -15,6 +16,7 @@
   },
   "sampleDB": {
     "type": "mssql",
+    "driverClass": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
 	"jar": "lib/mssql-jdbc-13.4.0.jre11.jar",
     "user": "sample",
     "password": "sample1234!",
@@ -29,6 +31,7 @@
   },
   "mysqlDB": {
     "type": "mysql",
+    "driverClass": "com.mysql.cj.jdbc.Driver",
     "user": "sahara",
     "password": "1111",
     "server": "localhost",
@@ -40,6 +43,7 @@
   },
   "mariaDB": {
     "type": "mariadb",
+    "driverClass": "org.mariadb.jdbc.Driver",
     "user": "sahara",
     "password": "1111",
     "server": "localhost",
@@ -51,6 +55,7 @@
   },
   "postgresDB": {
     "type": "postgresql",
+    "driverClass": "org.postgresql.Driver",
     "user": "postgres",
     "password": "1111",
     "server": "localhost",
@@ -62,11 +67,13 @@
   },
   "sqliteDB": {
     "type": "sqlite",
+    "driverClass": "org.sqlite.JDBC",
     "jar": "lib/sqlite-jdbc.jar",
     "database": "./data/mydb.sqlite"
   },
   "oracleDB": {
     "type": "oracle",
+    "driverClass": "oracle.jdbc.OracleDriver",
     "user": "c##scott",
     "password": "tiger",
     "server": "localhost",
@@ -78,6 +85,7 @@
   },
   "tiberoDB": {
     "type": "tibero",
+    "driverClass": "com.tmax.tibero.jdbc.TbDriver",
     "jar": "lib/tibero6-jdbc.jar",
     "user": "tibero",
     "password": "tibero",

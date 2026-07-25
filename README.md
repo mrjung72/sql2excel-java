@@ -91,8 +91,8 @@ java -jar target/sql2excel-java-1.0.0.jar validate -q src/main/resources/queries
 }
 ```
 
-- `type`: `mssql`, `mysql`, `mariadb`, `postgresql`, `sqlite`, `oracle`, `tibero`
-- `driverClass` (선택): 사용할 JDBC 드라이버 클래스명. 생략하면 `type`에 따른 기본 클래스 사용
+- `type`: 데이터베이스 벤더별 대표 이름(`DatabaseType`)입니다. `mssql`, `mysql`, `mariadb`, `postgresql`, `sqlite`, `oracle`, `tibero`를 사용합니다.
+- `driverClass` (필수): 사용할 JDBC 드라이버 클래스명. `dbinfo.json`에서 직접 정의합니다.
 - `driver` (선택): Node.js 버전과의 호환성을 위해 유지. `.`이 포함된 클래스명이면 `driverClass`로 사용
 
 ### queries/sample-queries.json
