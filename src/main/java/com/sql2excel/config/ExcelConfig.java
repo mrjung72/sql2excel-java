@@ -11,6 +11,7 @@ public class ExcelConfig {
     private Integer maxRows;
     private Map<String, Object> header;
     private Map<String, Object> body;
+    private String style;
 
     public ExcelConfig() {
     }
@@ -53,5 +54,13 @@ public class ExcelConfig {
 
     public void setBody(Map<String, Object> body) {
         this.body = body;
+    }
+
+    public String getStyle() {
+        return style;
+    }
+
+    public void setStyle(String style) {
+        this.style = style;
     }
 }

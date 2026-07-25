@@ -19,20 +19,16 @@ import java.util.*;
 
 public class ExcelExporter {
 
-    public void export(String outputPath, List<SheetData> sheets, ExcelConfig config) throws IOException {
+    public void export(String outputPath, List<SheetData> sheets) throws IOException {
         if (sheets == null || sheets.isEmpty()) {
             throw new IllegalArgumentException("No sheet data to export");
         }
 
         XSSFWorkbook workbook = new XSSFWorkbook();
 
-        CellStyle headerStyle = createStyle(workbook, config.getHeader());
-        CellStyle bodyStyle = createStyle(workbook, config.getBody());
-        DataFormat dataFormat = workbook.createDataFormat();
-
         Set<String> usedSheetNames = new HashSet<>();
         for (SheetData data : sheets) {
-            addSheet(workbook, data, headerStyle, bodyStyle, usedSheetNames);
+            addSheet(workbook, data, usedSheetNames);
         }
 
         Path outPath = Paths.get(outputPath);
@@ -44,7 +40,9 @@ public class ExcelExporter {
         }
     }
 
-    private void addSheet(XSSFWorkbook workbook, SheetData data, CellStyle headerStyle, CellStyle bodyStyle, Set<String> usedNames) {
+    private void addSheet(XSSFWorkbook workbook, SheetData data, Set<String> usedNames) {
+        CellStyle headerStyle = createStyle(workbook, data.getHeader());
+        CellStyle bodyStyle = createStyle(workbook, data.getBody());
         String sheetName = makeUniqueSheetName(data.getName(), usedNames);
         Sheet sheet = workbook.createSheet(sheetName);
 
@@ -321,11 +319,16 @@ public class ExcelExporter {
         private final String name;
         private final List<String> columns;
         private final List<Map<String, Object>> rows;
+        private final Map<String, Object> header;
+        private final Map<String, Object> body;
 
-        public SheetData(String name, List<String> columns, List<Map<String, Object>> rows) {
+        public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
+                         Map<String, Object> header, Map<String, Object> body) {
             this.name = name;
             this.columns = columns;
             this.rows = rows;
+            this.header = header;
+            this.body = body;
         }
 
         public String getName() {
@@ -338,6 +341,14 @@ public class ExcelExporter {
 
         public List<Map<String, Object>> getRows() {
             return rows;
+        }
+
+        public Map<String, Object> getHeader() {
+            return header;
+        }
+
+        public Map<String, Object> getBody() {
+            return body;
         }
     }
 }

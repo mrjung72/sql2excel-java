@@ -41,9 +41,12 @@ public class ConfigLoader {
     }
 
     public QueryConfig loadQueryConfig(Path path) throws IOException {
+        StyleTemplate.load(Path.of("conf/excel-style.json"));
         String name = path.getFileName().toString().toLowerCase();
         if (name.endsWith(".json")) {
-            return objectMapper.readValue(path.toFile(), QueryConfig.class);
+            QueryConfig qc = objectMapper.readValue(path.toFile(), QueryConfig.class);
+            applyStyles(qc);
+            return qc;
         }
         if (name.endsWith(".xml")) {
             return loadQueryConfigXml(path);
@@ -65,6 +68,7 @@ public class ConfigLoader {
             qc.setExcel(parseExcelConfig(root));
             qc.setVars(parseVars(root));
             qc.setSheets(parseSheets(root, qc.getVars()));
+            applyStyles(qc);
 
             return qc;
         } catch (Exception e) {
@@ -89,6 +93,7 @@ public class ConfigLoader {
                 } catch (NumberFormatException ignored) {
                 }
             }
+            excel.setStyle(getAttr(el, "style"));
         }
         return excel;
     }
@@ -146,6 +151,7 @@ public class ConfigLoader {
             sheet.setDb(getAttr(el, "db"));
             sheet.setAggregateColumn(getAttr(el, "aggregateColumn"));
             sheet.setExceptColumns(getAttr(el, "exceptColumns"));
+            sheet.setStyle(getAttr(el, "style"));
 
             NodeList queryNodes = el.getElementsByTagName("query");
             if (queryNodes.getLength() > 0) {
@@ -164,6 +170,18 @@ public class ConfigLoader {
             sheets.add(sheet);
         }
         return sheets;
+    }
+
+    private void applyStyles(QueryConfig qc) {
+        if (qc == null) {
+            return;
+        }
+        StyleTemplate.apply(qc.getExcel());
+        if (qc.getSheets() != null) {
+            for (SheetConfig sheet : qc.getSheets()) {
+                StyleTemplate.apply(sheet);
+            }
+        }
     }
 
     private String getAttr(Element el, String name) {

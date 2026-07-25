@@ -93,7 +93,9 @@ public class ExportCommand implements Callable<Integer> {
                 }
 
                 String sheetName = new VariableResolver().resolve(sheet.getName(), vars);
-                sheets.add(new ExcelExporter.SheetData(sheetName, columns, filteredRows));
+                Map<String, Object> header = sheet.getHeader() != null ? sheet.getHeader() : excelConfig.getHeader();
+                Map<String, Object> body = sheet.getBody() != null ? sheet.getBody() : excelConfig.getBody();
+                sheets.add(new ExcelExporter.SheetData(sheetName, columns, filteredRows, header, body));
                 System.out.println("Sheet '" + sheetName + "' rows: " + result.getRowCount());
             }
 
@@ -102,7 +104,7 @@ public class ExportCommand implements Callable<Integer> {
                 return 0;
             }
 
-            new ExcelExporter().export(outputPath, sheets, excelConfig);
+            new ExcelExporter().export(outputPath, sheets);
             System.out.println("Exported to: " + outputPath);
             return 0;
         } finally {

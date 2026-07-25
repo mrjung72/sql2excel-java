@@ -2,6 +2,7 @@ package com.sql2excel.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SheetConfig {
@@ -16,6 +17,9 @@ public class SheetConfig {
     private String exceptColumns;
     @JsonProperty("maxRows")
     private Integer maxRows;
+    private String style;
+    private Map<String, Object> header;
+    private Map<String, Object> body;
 
     public SheetConfig() {
     }
@@ -74,5 +78,29 @@ public class SheetConfig {
 
     public void setMaxRows(Integer maxRows) {
         this.maxRows = maxRows;
+    }
+
+    public String getStyle() {
+        return style;
+    }
+
+    public void setStyle(String style) {
+        this.style = style;
+    }
+
+    public Map<String, Object> getHeader() {
+        return header;
+    }
+
+    public void setHeader(Map<String, Object> header) {
+        this.header = header;
+    }
+
+    public Map<String, Object> getBody() {
+        return body;
+    }
+
+    public void setBody(Map<String, Object> body) {
+        this.body = body;
     }
 }
