@@ -45,7 +45,7 @@
   "mariaDB": {
     "type": "mariadb",
     "driverClass": "org.mariadb.jdbc.Driver",
-    "jar": "lib/mariadb-java-client-3.4.1.jar",
+    "jar": "lib/mariadb-java-client-3.5.9.jar",
     "user": "sahara",
     "password": "1111",
     "server": "localhost",
@@ -58,7 +58,7 @@
   "postgresDB": {
     "type": "postgresql",
     "driverClass": "org.postgresql.Driver",
-    "jar": "lib/postgresql-42.7.3.jar",
+    "jar": "lib/postgresql-42.7.13.jar",
     "user": "postgres",
     "password": "1111",
     "server": "localhost",

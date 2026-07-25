@@ -10,9 +10,6 @@ public enum DatabaseType {
     SQLITE,
     ORACLE,
     TIBERO;
-	
-	
-
 
     public static DatabaseType fromString(String type) {
         if (type == null || type.isEmpty()) {
@@ -38,8 +35,9 @@ public enum DatabaseType {
             case MSSQL:
                 return buildMssqlUrl(config);
             case MYSQL:
-            case MARIADB:
                 return buildMysqlUrl(config);
+            case MARIADB:
+                return buildMariadbUrl(config);
             case POSTGRESQL:
                 return buildPostgresUrl(config);
             case SQLITE:
@@ -80,6 +78,19 @@ public enum DatabaseType {
         StringBuilder sb = new StringBuilder("jdbc:mysql://")
                 .append(host).append(":").append(port).append("/").append(db);
         sb.append("?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC");
+        if (config.option("connectionTimeout") != null) {
+            sb.append("&connectTimeout=").append(config.option("connectionTimeout"));
+        }
+        return sb.toString();
+    }
+
+    private String buildMariadbUrl(DatabaseConfig config) {
+        String host = config.getServer() != null ? config.getServer() : "localhost";
+        int port = config.getPort() > 0 ? config.getPort() : 3306;
+        String db = config.getDatabase() != null ? config.getDatabase() : "";
+        StringBuilder sb = new StringBuilder("jdbc:mariadb://")
+                .append(host).append(":").append(port).append("/").append(db);
+        sb.append("?useSSL=false&serverTimezone=UTC");
         if (config.option("connectionTimeout") != null) {
             sb.append("&connectTimeout=").append(config.option("connectionTimeout"));
         }
