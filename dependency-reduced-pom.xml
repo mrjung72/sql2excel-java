@@ -4,7 +4,7 @@
   <groupId>com.sql2excel</groupId>
   <artifactId>sql2excel-java</artifactId>
   <name>sql2excel-java</name>
-  <version>1.0.2</version>
+  <version>1.0.5</version>
   <description>SQL query results to Excel exporter (Java version)</description>
   <build>
     <plugins>
@@ -41,6 +41,38 @@
                   <mainClass>com.sql2excel.Sql2ExcelApplication</mainClass>
                 </transformer>
               </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>create-dist</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <property />
+                <property />
+                <mkdir />
+                <copy />
+                <copy>
+                  <fileset />
+                </copy>
+                <copy>
+                  <fileset />
+                </copy>
+                <copy />
+                <copy />
+                <zip>
+                  <zipfileset />
+                </zip>
+              </target>
             </configuration>
           </execution>
         </executions>
