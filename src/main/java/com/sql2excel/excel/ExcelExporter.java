@@ -2,6 +2,7 @@ package com.sql2excel.excel;
 
 import com.sql2excel.config.ExcelConfig;
 import com.sql2excel.config.SheetConfig;
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
@@ -27,9 +28,17 @@ public class ExcelExporter {
         XSSFWorkbook workbook = new XSSFWorkbook();
 
         Set<String> usedSheetNames = new HashSet<>();
+        List<String> dataSheetNames = new ArrayList<>();
+        boolean tocAdded = false;
         for (SheetData data : sheets) {
-            addSheet(workbook, data, usedSheetNames);
+            String actualName = addSheet(workbook, data, usedSheetNames);
+            if ("목차".equals(data.getName()) && !tocAdded) {
+                tocAdded = true;
+            } else {
+                dataSheetNames.add(actualName);
+            }
         }
+        addTocHyperlinks(workbook, dataSheetNames);
 
         Path outPath = Paths.get(outputPath);
         Files.createDirectories(outPath.getParent());
@@ -40,7 +49,7 @@ public class ExcelExporter {
         }
     }
 
-    private void addSheet(XSSFWorkbook workbook, SheetData data, Set<String> usedNames) {
+    private String addSheet(XSSFWorkbook workbook, SheetData data, Set<String> usedNames) {
         CellStyle headerStyle = createStyle(workbook, data.getHeader());
         CellStyle bodyStyle = createStyle(workbook, data.getBody());
         String sheetName = makeUniqueSheetName(data.getName(), usedNames);
@@ -84,6 +93,73 @@ public class ExcelExporter {
 
         // Freeze header row
         sheet.createFreezePane(0, 1);
+        return sheetName;
+    }
+
+    private void addTocHyperlinks(XSSFWorkbook workbook, List<String> dataSheetNames) {
+        Sheet tocSheet = workbook.getSheet("목차");
+        if (tocSheet == null) {
+            return;
+        }
+        Row headerRow = tocSheet.getRow(0);
+        if (headerRow == null) {
+            return;
+        }
+        int sheetNameCol = -1;
+        for (Cell cell : headerRow) {
+            if ("시트명".equals(cell.getStringCellValue())) {
+                sheetNameCol = cell.getColumnIndex();
+                break;
+            }
+        }
+        if (sheetNameCol < 0) {
+            return;
+        }
+
+        CreationHelper helper = workbook.getCreationHelper();
+        for (int i = 1; i <= tocSheet.getLastRowNum(); i++) {
+            Row row = tocSheet.getRow(i);
+            if (row == null) {
+                continue;
+            }
+            Cell cell = row.getCell(sheetNameCol, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+            if (cell == null) {
+                continue;
+            }
+            if (i - 1 >= dataSheetNames.size()) {
+                break;
+            }
+            String targetSheet = dataSheetNames.get(i - 1);
+            if (workbook.getSheet(targetSheet) == null) {
+                continue;
+            }
+
+            Hyperlink link = helper.createHyperlink(HyperlinkType.DOCUMENT);
+            link.setAddress("'" + targetSheet + "'!A1");
+            cell.setHyperlink(link);
+            cell.setCellStyle(createHyperlinkStyle(workbook, cell.getCellStyle()));
+        }
+    }
+
+    private CellStyle createHyperlinkStyle(XSSFWorkbook workbook, CellStyle baseStyle) {
+        XSSFCellStyle style = (XSSFCellStyle) workbook.createCellStyle();
+        if (baseStyle != null) {
+            style.cloneStyleFrom(baseStyle);
+        }
+        Font linkFont = workbook.createFont();
+        if (baseStyle != null) {
+            Font baseFont = workbook.getFontAt(baseStyle.getFontIndex());
+            if (baseFont != null) {
+                linkFont.setFontName(baseFont.getFontName());
+                linkFont.setFontHeightInPoints(baseFont.getFontHeightInPoints());
+                linkFont.setBold(baseFont.getBold());
+                linkFont.setItalic(baseFont.getItalic());
+            }
+        }
+        linkFont.setUnderline(FontUnderline.SINGLE.getByteValue());
+        linkFont.setColor(IndexedColors.BLUE.getIndex());
+        style.setFont(linkFont);
+        return style;
     }
 
     private CellStyle createStyle(XSSFWorkbook workbook, Map<String, Object> styleMap) {
