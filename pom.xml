@@ -117,6 +117,7 @@
 		                        </excludes>
 		                    </filter>
 		                </filters>
+		                <createDependencyReducedPom>false</createDependencyReducedPom>
 		                <transformers>
 		                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 		                        <mainClass>com.sql2excel.Sql2ExcelApplication</mainClass>
