@@ -27,7 +27,7 @@ public class MenuRunner {
         while (true) {
             printHeader();
             printMenu();
-            String selection = prompt("선택하세요 (0-6): ");
+            String selection = prompt("선택하세요 (0-7): ");
             if (selection == null) {
                 break;
             }
@@ -51,6 +51,9 @@ public class MenuRunner {
                     exportAllStyles();
                     break;
                 case "6":
+                    exportStyleSamples();
+                    break;
+                case "7":
                     printHelp();
                     break;
                 default:
@@ -75,8 +78,9 @@ public class MenuRunner {
         System.out.println("3. 엑셀 파일 생성 (XML)");
         System.out.println("4. 엑셀 파일 생성 (JSON)");
         System.out.println("5. 모든 스타일로 엑셀 파일 생성");
+        System.out.println("6. 모든 스타일 샘플 엑셀 파일 생성");
         System.out.println();
-        System.out.println("6. 도움말");
+        System.out.println("7. 도움말");
         System.out.println("0. 종료");
         System.out.println();
     }
@@ -221,6 +225,36 @@ public class MenuRunner {
         pause();
     }
 
+    private void exportStyleSamples() {
+        printHeader();
+        System.out.println("모든 스타일 샘플 엑셀 파일 생성");
+        System.out.println();
+
+        System.out.println("모든 스타일이 적용된 샘플 엑셀 파일을 생성하고 있습니다...");
+        System.out.println();
+
+        LocalDateTime startTime = LocalDateTime.now();
+
+        ExportStyleSamplesCommand command = new ExportStyleSamplesCommand();
+
+        try {
+            int code = command.call();
+            LocalDateTime endTime = LocalDateTime.now();
+            if (code == 0) {
+                System.out.println("✅ 샘플 엑셀 파일이 성공적으로 생성되었습니다.");
+                System.out.println("시작 시간: " + startTime.format(TIME_FORMATTER));
+                System.out.println("종료 시간: " + endTime.format(TIME_FORMATTER));
+            } else {
+                System.out.println("❌ 샘플 엑셀 파일 생성 중 오류가 발생했습니다.(code == 0 ))");
+            }
+        } catch (Exception e) {
+            System.out.println("오류: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        pause();
+    }
+
     private void printHelp() {
         printHeader();
         System.out.println("도움말");
@@ -233,12 +267,14 @@ public class MenuRunner {
         System.out.println("- 엑셀 스타일링 및 포맷팅");
         System.out.println("- 다중 시트 지원");
         System.out.println("- 모든 스타일 일괄 생성");
+        System.out.println("- 모든 스타일 샘플 시트 생성");
         System.out.println();
         System.out.println("사용 방법:");
         System.out.println("1. 검증: 쿼리 정의 파일 확인");
         System.out.println("2. 연결 테스트: 데이터베이스 연결 확인");
         System.out.println("3. 생성: 쿼리에서 엑셀 파일 생성");
         System.out.println("4. 모든 스타일 생성: excel-style.json의 모든 스타일로 생성");
+        System.out.println("5. 샘플 생성: excel-style.json의 모든 스타일이 적용된 샘플 파일 생성");
         System.out.println();
         System.out.println("설정:");
         System.out.println("- 데이터베이스: config/dbinfo.json");

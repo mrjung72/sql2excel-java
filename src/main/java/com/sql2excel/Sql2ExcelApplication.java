@@ -11,6 +11,7 @@ import picocli.CommandLine.Command;
         subcommands = {
                 ExportCommand.class,
                 ExportStylesCommand.class,
+                ExportStyleSamplesCommand.class,
                 ListDbsCommand.class,
                 ValidateCommand.class
         }

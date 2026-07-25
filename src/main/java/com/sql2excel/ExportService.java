@@ -25,12 +25,23 @@ public class ExportService {
                              Map<String, Object> vars,
                              String outputPath) throws Exception {
         ExcelConfig excelConfig = queryConfig.getExcel();
+        if (excelConfig == null) {
+            throw new IllegalStateException("excel config is missing");
+        }
         List<ExcelExporter.SheetData> sheets = new ArrayList<>();
         List<Map<String, Object>> tocRows = new ArrayList<>();
         Map<String, QueryExecutor> executors = new LinkedHashMap<>();
 
         try {
-            for (SheetConfig sheet : queryConfig.getSheets()) {
+            List<SheetConfig> sheetConfigs = queryConfig.getSheets();
+            if (sheetConfigs == null || sheetConfigs.isEmpty()) {
+                System.out.println("No sheets to export.");
+                return 0;
+            }
+            for (SheetConfig sheet : sheetConfigs) {
+                if (sheet == null) {
+                    continue;
+                }
                 if (sheet.getUse() == null || !sheet.getUse()) {
                     continue;
                 }
@@ -96,6 +107,9 @@ public class ExportService {
             new ExcelExporter().export(outputPath, sheets);
             System.out.println("Exported to: " + outputPath);
             return 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         } finally {
             for (QueryExecutor executor : executors.values()) {
                 try {

@@ -30,6 +30,9 @@ public class ExportCommand implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
+        if (configPath == null || configPath.isEmpty()) {
+            configPath = "config/dbinfo.json";
+        }
         if ((queryPath == null || queryPath.isEmpty()) && (xmlPath == null || xmlPath.isEmpty())) {
             System.err.println("Error: either --query or --xml must be specified.");
             return 1;
