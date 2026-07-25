@@ -52,6 +52,7 @@ public class ExportCommand implements Callable<Integer> {
         String outputPath = new VariableResolver().resolve(excelConfig.getOutput(), vars);
 
         List<ExcelExporter.SheetData> sheets = new ArrayList<>();
+        List<Map<String, Object>> tocRows = new ArrayList<>();
         Map<String, QueryExecutor> executors = new LinkedHashMap<>();
 
         try {
@@ -96,6 +97,13 @@ public class ExportCommand implements Callable<Integer> {
                 Map<String, Object> header = sheet.getHeader() != null ? sheet.getHeader() : excelConfig.getHeader();
                 Map<String, Object> body = sheet.getBody() != null ? sheet.getBody() : excelConfig.getBody();
                 sheets.add(new ExcelExporter.SheetData(sheetName, columns, filteredRows, header, body));
+
+                Map<String, Object> tocRow = new LinkedHashMap<>();
+                tocRow.put("시트명", sheetName);
+                tocRow.put("조회건수", result.getRowCount());
+                tocRow.put("사용된 SQL문", result.getQuery());
+                tocRows.add(tocRow);
+
                 System.out.println("Sheet '" + sheetName + "' rows: " + result.getRowCount());
             }
 
@@ -103,6 +111,11 @@ public class ExportCommand implements Callable<Integer> {
                 System.out.println("No sheets to export.");
                 return 0;
             }
+
+            List<String> tocColumns = Arrays.asList("시트명", "조회건수", "사용된 SQL문");
+            Map<String, Object> tocHeader = excelConfig.getHeader();
+            Map<String, Object> tocBody = excelConfig.getBody();
+            sheets.add(0, new ExcelExporter.SheetData("목차", tocColumns, tocRows, tocHeader, tocBody));
 
             new ExcelExporter().export(outputPath, sheets);
             System.out.println("Exported to: " + outputPath);
