@@ -14,9 +14,11 @@ public enum DatabaseType {
     ORACLE("oracle.jdbc.OracleDriver"),
     ORACLEDB("oracle.jdbc.OracleDriver"),
     OCI("oracle.jdbc.OracleDriver"),
-    TIBERO("com.tmax.tibero.jdbc.TiberoDriver"),
-    TIBERO6("com.tmax.tibero.jdbc.TiberoDriver"),
-    TIBERO7("com.tmax.tibero.jdbc.TiberoDriver");
+    TIBERO("com.tmax.tibero.jdbc.TbDriver"),
+    TIBERO6("com.tmax.tibero.jdbc.TbDriver"),
+    TIBERO7("com.tmax.tibero.jdbc.TbDriver");
+	
+	
 
     private final String defaultDriverClass;
 
