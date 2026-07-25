@@ -18,7 +18,7 @@ SQL 쿼리 결과를 엑셀 파일로 내보내는 Java 기반 CLI 도구입니�
 
 - JDK 11 이상
 - Maven 3.8 이상
-- 대상 데이터베이스 JDBC 드라이버 (`pom.xml`에 주요 드라이버는 등록되어 있음)
+- 대상 데이터베이스 JDBC 드라이버 JAR (사용할 DB에 맞는 JAR를 `lib/` 디렉토리에 넣어야 합니다. SQLite/PostgreSQL/MariaDB 드라이버는 기본적으로 `lib/`에 포함되어 있습니다.)
 
 ## 빌드
 
@@ -93,6 +93,7 @@ java -jar target/sql2excel-java-1.0.0.jar validate -q src/main/resources/queries
 
 - `type`: 데이터베이스 벤더별 대표 이름(`DatabaseType`)입니다. `mssql`, `mysql`, `mariadb`, `postgresql`, `sqlite`, `oracle`, `tibero`를 사용합니다.
 - `driverClass` (필수): 사용할 JDBC 드라이버 클래스명. `dbinfo.json`에서 직접 정의합니다.
+- `jar` (필수): JDBC 드라이버 JAR 파일 경로. 예: `lib/sqlite-jdbc-3.53.2.1.jar`. SQLite/PostgreSQL/MariaDB 드라이버는 기본적으로 `lib/`에 포함되어 있고, MSSQL/Oracle/Tibero 등 그 외 드라이버는 직접 `lib/`에 추가해야 합니다.
 - `driver` (선택): Node.js 버전과의 호환성을 위해 유지. `.`이 포함된 클래스명이면 `driverClass`로 사용
 
 ### queries/sample-queries.json
@@ -122,5 +123,5 @@ java -jar target/sql2excel-java-1.0.0.jar validate -q src/main/resources/queries
 
 ## 주의사항
 
-- Tibero JDBC 드라이버는 Maven Central에 없으므로, Tibero 설치 경로의 `tibero6-jdbc.jar`를 로컬 Maven 저장소에 설치하거나 `pom.xml`의 `tibero-jdbc` dependency를 사용합니다.
+- Tibero, MSSQL, Oracle 등 나머지 DB 드라이버는 Maven Central에서 자동으로 제공되지 않거나 라이선스 문제로 포함되어 있지 않으므로, 사용자가 직접 해당 JDBC JAR 파일을 `lib/` 디렉토리에 넣고 `dbinfo.json`의 `jar` 항목에 경로를 지정해야 합니다.
 - SQLite 사용 시 `database` 필드에 파일 경로를 입력합니다. (`:memory:`로 인메모리 사용 가능)

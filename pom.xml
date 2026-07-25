@@ -7,7 +7,7 @@
 
     <groupId>com.sql2excel</groupId>
     <artifactId>sql2excel-java</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <packaging>jar</packaging>
 
     <name>sql2excel-java</name>
@@ -52,33 +52,6 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
-        </dependency>
-
-        <!-- JDBC drivers -->
-        <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>mssql-jdbc</artifactId>
-            <version>12.6.1.jre11</version>
-        </dependency>
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.7.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.45.3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc11</artifactId>
-            <version>23.4.0.24.05</version>
         </dependency>
 
     </dependencies>
@@ -150,6 +123,9 @@
                                 </copy>
                                 <copy todir="${dist.dir}/queries">
                                     <fileset dir="${project.basedir}/queries"/>
+                                </copy>
+                                <copy todir="${dist.dir}/lib">
+                                    <fileset dir="${project.basedir}/lib"/>
                                 </copy>
                                 <copy file="${project.basedir}/run.bat" todir="${dist.dir}"/>
                                 <copy file="${project.basedir}/run.sh" todir="${dist.dir}"/>
