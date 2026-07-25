@@ -147,15 +147,20 @@ public class ConfigLoader {
             sheet.setAggregateColumn(getAttr(el, "aggregateColumn"));
             sheet.setExceptColumns(getAttr(el, "exceptColumns"));
 
-            StringBuilder sql = new StringBuilder();
-            NodeList children = el.getChildNodes();
-            for (int j = 0; j < children.getLength(); j++) {
-                Node child = children.item(j);
-                if (child.getNodeType() == Node.CDATA_SECTION_NODE || child.getNodeType() == Node.TEXT_NODE) {
-                    sql.append(child.getTextContent());
+            NodeList queryNodes = el.getElementsByTagName("query");
+            if (queryNodes.getLength() > 0) {
+                sheet.setQuery(queryNodes.item(0).getTextContent().trim());
+            } else {
+                StringBuilder sql = new StringBuilder();
+                NodeList children = el.getChildNodes();
+                for (int j = 0; j < children.getLength(); j++) {
+                    Node child = children.item(j);
+                    if (child.getNodeType() == Node.CDATA_SECTION_NODE || child.getNodeType() == Node.TEXT_NODE) {
+                        sql.append(child.getTextContent());
+                    }
                 }
+                sheet.setQuery(sql.toString().trim());
             }
-            sheet.setQuery(sql.toString().trim());
             sheets.add(sheet);
         }
         return sheets;
