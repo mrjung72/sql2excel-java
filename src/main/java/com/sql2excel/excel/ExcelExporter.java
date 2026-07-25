@@ -185,6 +185,12 @@ public class ExcelExporter {
             }
         }
 
+        // Wrap text
+        Object wrap = styleMap.get("wrap");
+        if (Boolean.TRUE.equals(wrap) || "true".equalsIgnoreCase(String.valueOf(wrap))) {
+            style.setWrapText(true);
+        }
+
         return style;
     }
 

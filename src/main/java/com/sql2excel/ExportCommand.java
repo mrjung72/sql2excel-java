@@ -114,7 +114,11 @@ public class ExportCommand implements Callable<Integer> {
 
             List<String> tocColumns = Arrays.asList("시트명", "조회건수", "사용된 SQL문");
             Map<String, Object> tocHeader = excelConfig.getHeader();
-            Map<String, Object> tocBody = excelConfig.getBody();
+            Map<String, Object> tocBody = new HashMap<>();
+            if (excelConfig.getBody() != null) {
+                tocBody.putAll(excelConfig.getBody());
+            }
+            tocBody.put("wrap", true);
             sheets.add(0, new ExcelExporter.SheetData("목차", tocColumns, tocRows, tocHeader, tocBody));
 
             new ExcelExporter().export(outputPath, sheets);

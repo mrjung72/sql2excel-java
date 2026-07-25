@@ -7,7 +7,7 @@
 
     <groupId>com.sql2excel</groupId>
     <artifactId>sql2excel-java</artifactId>
-    <version>1.1.3</version>
+    <version>1.1.4</version>
     <packaging>jar</packaging>
 
     <name>sql2excel-java</name>
