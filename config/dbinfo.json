@@ -17,7 +17,7 @@
   "sampleDB": {
     "type": "mssql",
     "driverClass": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
-	"jar": "lib/mssql-jdbc-13.4.0.jre11.jar",
+    "jar": "lib/mssql-jdbc-13.4.0.jre11.jar",
     "user": "sample",
     "password": "sample1234!",
     "server": "localhost",
@@ -32,6 +32,7 @@
   "mysqlDB": {
     "type": "mysql",
     "driverClass": "com.mysql.cj.jdbc.Driver",
+    "jar": "lib/mysql-connector-j-8.0.33.jar",
     "user": "sahara",
     "password": "1111",
     "server": "localhost",
@@ -44,6 +45,7 @@
   "mariaDB": {
     "type": "mariadb",
     "driverClass": "org.mariadb.jdbc.Driver",
+    "jar": "lib/mariadb-java-client-3.4.1.jar",
     "user": "sahara",
     "password": "1111",
     "server": "localhost",
@@ -56,6 +58,7 @@
   "postgresDB": {
     "type": "postgresql",
     "driverClass": "org.postgresql.Driver",
+    "jar": "lib/postgresql-42.7.3.jar",
     "user": "postgres",
     "password": "1111",
     "server": "localhost",
@@ -68,12 +71,13 @@
   "sqliteDB": {
     "type": "sqlite",
     "driverClass": "org.sqlite.JDBC",
-    "jar": "lib/sqlite-jdbc.jar",
-    "database": "./data/mydb.sqlite"
+    "jar": "lib/sqlite-jdbc-3.53.2.1.jar",
+    "database": "./datas/mydb.sqlite"
   },
   "oracleDB": {
     "type": "oracle",
     "driverClass": "oracle.jdbc.OracleDriver",
+    "jar": "lib/ojdbc11.jar",
     "user": "c##scott",
     "password": "tiger",
     "server": "localhost",
