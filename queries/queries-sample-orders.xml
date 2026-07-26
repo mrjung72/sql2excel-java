@@ -1,5 +1,5 @@
 <queries>
-  <excel db="oracleDB" output="d:/temp/sales_summary_${DATE.KST:yyyyMMddhhmmss}.xlsx" maxRows="200" style="modern">
+  <excel db="postgresDB" output="c:/temp/sales_summary_${DATE.KST:yyyyMMddhhmmss}.xlsx" maxRows="200" style="modern">
     <!-- Style template ID (default: default) -->
     <!-- Available templates: default, modern, dark, colorful, minimal, business, premium -->
     <!-- Can be overridden with individual style attributes if needed -->
@@ -13,7 +13,7 @@
     <var name="categoryIds">[1, 2, 3, 5]</var>
     <var name="maxRows">1000</var>
   </vars>
-  <sheet name="${envType}_Order_List" use="true" aggregateColumn="PaymentMethod" maxRows="100" db="oracleDB">
+  <sheet name="${envType}_Order_List" use="true" aggregateColumn="PaymentMethod" maxRows="100">
     <![CDATA[
       SELECT 
         OrderNumber as OrderNumber,
@@ -26,7 +26,7 @@
       ORDER BY OrderDate DESC
     ]]>
   </sheet>
-  <sheet name="Customer_List" use="true" aggregateColumn="Region" style="dark" db="sampleDB">
+  <sheet name="Customer_List" use="true" aggregateColumn="Region" style="dark">
     <![CDATA[
       SELECT *
       FROM Customers

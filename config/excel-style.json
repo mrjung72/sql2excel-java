@@ -1,8 +1,10 @@
 {
   "default": {
     "header": {
-      "font": { "name": "Arial", "size": 11, "bold": true, "color": "000000" },
-      "border": { "all": { "style": "thin", "color": "000000" } }
+      "font": { "name": "Arial", "size": 11, "bold": true, "color": "#000000" },
+      "fill": { "color": "43DE63" },
+      "alignment": { "horizontal": "center", "vertical": "middle" },
+      "border": { "all": { "style": "thin", "color": "27F584" } }
     },
     "body": {}
   },
