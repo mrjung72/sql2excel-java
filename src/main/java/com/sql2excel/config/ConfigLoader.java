@@ -67,7 +67,9 @@ public class ConfigLoader {
 
             qc.setExcel(parseExcelConfig(root));
             qc.setVars(parseVars(root));
-            qc.setSheets(parseSheets(root, qc.getVars()));
+            qc.setQueryDefs(parseQueryDefs(root));
+            qc.setDynamicVars(parseDynamicVars(root));
+            qc.setSheets(parseSheets(root, qc.getVars(), qc.getQueryDefs()));
             applyStyles(qc);
 
             return qc;
@@ -132,7 +134,29 @@ public class ConfigLoader {
         return trimmed;
     }
 
-    private List<SheetConfig> parseSheets(Element root, Map<String, Object> vars) {
+    private Map<String, String> parseQueryDefs(Element root) {
+        Map<String, String> defs = new LinkedHashMap<>();
+        NodeList defNodes = root.getElementsByTagName("queryDef");
+        for (int i = 0; i < defNodes.getLength(); i++) {
+            Element el = (Element) defNodes.item(i);
+            String id = el.getAttribute("id");
+            if (id == null || id.isEmpty()) {
+                continue;
+            }
+            StringBuilder sql = new StringBuilder();
+            NodeList children = el.getChildNodes();
+            for (int j = 0; j < children.getLength(); j++) {
+                Node child = children.item(j);
+                if (child.getNodeType() == Node.CDATA_SECTION_NODE || child.getNodeType() == Node.TEXT_NODE) {
+                    sql.append(child.getTextContent());
+                }
+            }
+            defs.put(id, sql.toString().trim());
+        }
+        return defs;
+    }
+
+    private List<SheetConfig> parseSheets(Element root, Map<String, Object> vars, Map<String, String> queryDefs) {
         List<SheetConfig> sheets = new ArrayList<>();
         NodeList sheetNodes = root.getElementsByTagName("sheet");
         for (int i = 0; i < sheetNodes.getLength(); i++) {
@@ -152,26 +176,85 @@ public class ConfigLoader {
             sheet.setAggregateColumn(getAttr(el, "aggregateColumn"));
             sheet.setExceptColumns(getAttr(el, "exceptColumns"));
             sheet.setStyle(getAttr(el, "style"));
+            sheet.setQueryRef(getAttr(el, "queryRef"));
 
-            NodeList queryNodes = el.getElementsByTagName("query");
-            if (queryNodes.getLength() > 0) {
-                Element queryEl = (Element) queryNodes.item(0);
-                sheet.setQuery(queryEl.getTextContent().trim());
-                sheet.setHiddenColumns(getAttr(queryEl, "hide_columns"));
-            } else {
-                StringBuilder sql = new StringBuilder();
-                NodeList children = el.getChildNodes();
-                for (int j = 0; j < children.getLength(); j++) {
-                    Node child = children.item(j);
-                    if (child.getNodeType() == Node.CDATA_SECTION_NODE || child.getNodeType() == Node.TEXT_NODE) {
-                        sql.append(child.getTextContent());
-                    }
+            sheet.setParams(parseSheetParams(el));
+
+            if (sheet.getQueryRef() != null && !sheet.getQueryRef().isEmpty()) {
+                String query = queryDefs != null ? queryDefs.get(sheet.getQueryRef()) : null;
+                if (query == null || query.isEmpty()) {
+                    throw new IllegalStateException("queryDef not found: " + sheet.getQueryRef());
                 }
-                sheet.setQuery(sql.toString().trim());
+                sheet.setQuery(query);
+            } else {
+                NodeList queryNodes = el.getElementsByTagName("query");
+                if (queryNodes.getLength() > 0) {
+                    Element queryEl = (Element) queryNodes.item(0);
+                    sheet.setQuery(queryEl.getTextContent().trim());
+                    sheet.setHiddenColumns(getAttr(queryEl, "hide_columns"));
+                } else {
+                    StringBuilder sql = new StringBuilder();
+                    NodeList children = el.getChildNodes();
+                    for (int j = 0; j < children.getLength(); j++) {
+                        Node child = children.item(j);
+                        if (child.getNodeType() == Node.CDATA_SECTION_NODE || child.getNodeType() == Node.TEXT_NODE) {
+                            sql.append(child.getTextContent());
+                        }
+                    }
+                    sheet.setQuery(sql.toString().trim());
+                }
             }
             sheets.add(sheet);
         }
         return sheets;
+    }
+
+    private Map<String, Object> parseSheetParams(Element sheetEl) {
+        Map<String, Object> params = new LinkedHashMap<>();
+        NodeList paramLists = sheetEl.getElementsByTagName("params");
+        if (paramLists.getLength() == 0) {
+            return params;
+        }
+        Element paramsEl = (Element) paramLists.item(0);
+        NodeList children = paramsEl.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node node = children.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE && "param".equals(node.getNodeName())) {
+                Element param = (Element) node;
+                String name = param.getAttribute("name");
+                String value = param.getTextContent();
+                if (name != null && !name.isEmpty()) {
+                    params.put(name, parseVarValue(value));
+                }
+            }
+        }
+        return params;
+    }
+
+    private List<DynamicVarConfig> parseDynamicVars(Element root) {
+        List<DynamicVarConfig> vars = new ArrayList<>();
+        NodeList nodes = root.getElementsByTagName("dynamicVar");
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element el = (Element) nodes.item(i);
+            DynamicVarConfig dv = new DynamicVarConfig();
+            dv.setName(getAttr(el, "name"));
+            dv.setType(getAttr(el, "type"));
+            dv.setDb(getAttr(el, "db") != null ? getAttr(el, "db") : getAttr(el, "database"));
+            StringBuilder sql = new StringBuilder();
+            NodeList children = el.getChildNodes();
+            for (int j = 0; j < children.getLength(); j++) {
+                Node child = children.item(j);
+                if (child.getNodeType() == Node.CDATA_SECTION_NODE || child.getNodeType() == Node.TEXT_NODE) {
+                    sql.append(child.getTextContent());
+                }
+            }
+            dv.setQuery(sql.toString().trim());
+            if (dv.getType() == null || dv.getType().isEmpty()) {
+                dv.setType("column_identified");
+            }
+            vars.add(dv);
+        }
+        return vars;
     }
 
     private void applyStyles(QueryConfig qc) {

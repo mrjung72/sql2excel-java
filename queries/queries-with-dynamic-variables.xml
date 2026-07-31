@@ -1,5 +1,5 @@
 <queries>
-  <excel db="sampleDB" output="d:/temp/dynamic_variables_test_${DATE:yyyyMMddhhmmss}.xlsx" maxRows="20" style="modern" aggregateInfoTemplate="Related data {count} records {details}">
+  <excel db="postgresDB" output="output/dynamic_variables_test_${DATE:yyyyMMddhhmmss}.xlsx" maxRows="20" style="modern" aggregateInfoTemplate="Related data {count} records {details}">
     <!-- Style template ID (default: default) -->
     <!-- Available templates: default, modern, dark, colorful, minimal, business, premium -->
     <!-- Can be overridden with individual style attributes if needed -->
@@ -19,26 +19,26 @@
   <!-- Dynamic variable definitions -->
   <dynamicVars>
          <!-- Default type (column_identified): Create arrays for each column -->
-    <dynamicVar name="customerData" description="Customer data by column">
+    <dynamicVar name="customerData" description="Customer data by column" db="postgresDB">
       <![CDATA[
-        SELECT distinct CustomerID, CustomerName, City, Region, CustomerType
-        FROM SampleDB.dbo.Customers
-        WHERE IsActive = 1
+        SELECT DISTINCT CustomerID, CustomerName, City, Region, CustomerType
+        FROM Customers
+        WHERE IsActive = TRUE
         ORDER BY CustomerID
       ]]>
     </dynamicVar>
     
     <!-- key_value_pairs type: First column as key, second column as value -->
-    <dynamicVar name="orderDetails" type="key_value_pairs" description="Order detail information" database="sampleDB">
+    <dynamicVar name="orderDetails" type="key_value_pairs" description="Order detail information" db="postgresDB">
       <![CDATA[
-        SELECT distinct OrderID, OrderDetailID
-        FROM SampleDB.dbo.OrderDetails
+        SELECT DISTINCT OrderID, OrderDetailID
+        FROM OrderDetails
         ORDER BY OrderID
       ]]>
     </dynamicVar>
     
       <!-- Default type (column_identified): Create arrays for each column -->
-      <dynamicVar name="activeOrders" description="Active orders list" db="sampleDB">
+      <dynamicVar name="activeOrders" description="Active orders list" db="postgresDB">
        <![CDATA[
          SELECT distinct OrderID
          FROM Orders
@@ -47,7 +47,7 @@
      </dynamicVar>
      
            <!-- Default type (column_identified): Dynamic variable combining datetime functions and regular variables -->
-      <dynamicVar name="recentOrders" description="Recent orders information" db="sampleDB">
+      <dynamicVar name="recentOrders" description="Recent orders information" db="postgresDB">
        <![CDATA[
          SELECT distinct OrderID, OrderNumber, OrderDate
          FROM Orders
@@ -74,7 +74,7 @@
 
 
   <!-- Sheet definitions -->
-  <sheet name="${envType}_DynamicVar_Seoul_Busan_Test" use="true" queryRef="customer_base" aggregateColumn="Region" aggregateInfoTemplate="Customer distribution by region: {count} records {details}" maxRows="100" db="mariaDB">
+  <sheet name="${envType}_DynamicVar_Seoul_Busan_Test" use="true" queryRef="customer_base" aggregateColumn="Region" aggregateInfoTemplate="Customer distribution by region: {count} records {details}" maxRows="100" db="postgresDB">
     <params>
       <param name="regionList">["서울", "부산"]</param>
     </params>
@@ -113,7 +113,7 @@
     ]]>
   </sheet>
   
-  <sheet name="Combined_DynamicVar_Test" use="true" aggregateInfoTemplate="Related data {count} records" db="oracleDB">
+  <sheet name="Combined_DynamicVar_Test" use="true" aggregateInfoTemplate="Related data {count} records" db="postgresDB">
     <![CDATA[
       SELECT 
         c.CustomerName as CustomerName,
@@ -125,14 +125,14 @@
       WHERE c.CustomerID IN (${customerData.CustomerID})
         AND c.Region IN (${customerData.Region})
         AND o.OrderID IN (${activeOrders.OrderID})
-        AND o.OrderDate >= '${startDate}'
-        AND o.OrderDate <= '${endDate}'
+        AND o.OrderDate >= '${startDate}'::date
+        AND o.OrderDate <= '${endDate}'::date
       GROUP BY c.CustomerName, c.Region
       ORDER BY TotalOrderAmount DESC
     ]]>
   </sheet>
   
-  <sheet name="TimeFunc_DynamicVar_Test" use="true">
+  <sheet name="TimeFunc_DynamicVar_Test" use="true" db="postgresDB">
     <![CDATA[
       SELECT 
         'Current Time' as Category,
@@ -144,11 +144,11 @@
       UNION ALL
       SELECT 
         'Dynamic Variable Test' as Category,
-        CONVERT(VARCHAR, GETDATE(), 120) as CurrentTime,
-        CONVERT(VARCHAR, GETDATE(), 23) as CurrentDate,
-        CONVERT(VARCHAR, GETDATE(), 108) as CurrentTimeOnly,
-        DATEDIFF(SECOND, '1970-01-01', GETDATE()) as UnixTimestamp,
-        GETDATE() as SQLServer_GETDATE
+        TO_CHAR(NOW(), 'YYYY-MM-DD HH24:MI:SS') as CurrentTime,
+        TO_CHAR(NOW(), 'YYYY-MM-DD') as CurrentDate,
+        TO_CHAR(NOW(), 'HH24:MI:SS') as CurrentTimeOnly,
+        EXTRACT(EPOCH FROM NOW())::int as UnixTimestamp,
+        NOW() as SQLServer_GETDATE
     ]]>
   </sheet>
 </queries>

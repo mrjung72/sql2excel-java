@@ -11,6 +11,10 @@ public class SheetConfig {
     private Boolean use = true;
     private String db;
     private String query;
+    @JsonProperty("queryRef")
+    private String queryRef;
+    @JsonProperty("params")
+    private Map<String, Object> params;
     @JsonProperty("aggregateColumn")
     private String aggregateColumn;
     @JsonProperty("exceptColumns")
@@ -56,6 +60,22 @@ public class SheetConfig {
 
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    public String getQueryRef() {
+        return queryRef;
+    }
+
+    public void setQueryRef(String queryRef) {
+        this.queryRef = queryRef;
+    }
+
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
     }
 
     public String getAggregateColumn() {

@@ -9,6 +9,8 @@ import java.util.Map;
 public class QueryConfig {
     private ExcelConfig excel;
     private Map<String, Object> vars;
+    private Map<String, String> queryDefs;
+    private List<DynamicVarConfig> dynamicVars;
     private List<SheetConfig> sheets;
 
     public QueryConfig() {
@@ -28,6 +30,22 @@ public class QueryConfig {
 
     public void setVars(Map<String, Object> vars) {
         this.vars = vars;
+    }
+
+    public Map<String, String> getQueryDefs() {
+        return queryDefs;
+    }
+
+    public void setQueryDefs(Map<String, String> queryDefs) {
+        this.queryDefs = queryDefs;
+    }
+
+    public List<DynamicVarConfig> getDynamicVars() {
+        return dynamicVars;
+    }
+
+    public void setDynamicVars(List<DynamicVarConfig> dynamicVars) {
+        this.dynamicVars = dynamicVars;
     }
 
     public List<SheetConfig> getSheets() {

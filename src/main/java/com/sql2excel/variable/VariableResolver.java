@@ -1,6 +1,9 @@
 package com.sql2excel.variable;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -74,11 +77,15 @@ public class VariableResolver {
         if (text == null) {
             return null;
         }
+        Map<String, Object> ciVars = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        if (vars != null) {
+            ciVars.putAll(vars);
+        }
         StringBuffer result = new StringBuffer();
         Matcher matcher = PLACEHOLDER.matcher(text);
         while (matcher.find()) {
             String placeholder = matcher.group(1);
-            String replacement = resolvePlaceholder(placeholder, vars, sqlContext);
+            String replacement = resolvePlaceholder(placeholder, ciVars, sqlContext);
             matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
         }
         matcher.appendTail(result);
@@ -96,6 +103,11 @@ public class VariableResolver {
 
         if (key.length() >= 4 && key.substring(0, 4).equalsIgnoreCase("DATE")) {
             return formatDate(key, format);
+        }
+
+        String special = resolveSpecialVariables(key, format);
+        if (special != null) {
+            return special;
         }
 
         Object value = vars.get(key);
@@ -140,6 +152,30 @@ public class VariableResolver {
             result.add(v.toString());
         }
         return result;
+    }
+
+    private String resolveSpecialVariables(String key, String format) {
+        String pattern = (format == null || format.isEmpty()) ? null : format;
+        LocalDateTime now = LocalDateTime.now();
+        if ("CURRENT_TIMESTAMP".equalsIgnoreCase(key) || "GETDATE".equalsIgnoreCase(key) || "GETDATE()".equalsIgnoreCase(key)) {
+            String p = (pattern == null) ? "yyyy-MM-dd HH:mm:ss" : pattern;
+            return now.format(DateTimeFormatter.ofPattern(convertNodeDatePattern(p)));
+        }
+        if ("CURRENT_DATE".equalsIgnoreCase(key)) {
+            String p = (pattern == null) ? "yyyy-MM-dd" : pattern;
+            return now.format(DateTimeFormatter.ofPattern(convertNodeDatePattern(p)));
+        }
+        if ("CURRENT_TIME".equalsIgnoreCase(key)) {
+            String p = (pattern == null) ? "HH:mm:ss" : pattern;
+            return now.format(DateTimeFormatter.ofPattern(convertNodeDatePattern(p)));
+        }
+        if ("UNIX_TIMESTAMP".equalsIgnoreCase(key)) {
+            return String.valueOf(Instant.now().getEpochSecond());
+        }
+        if ("TODAY".equalsIgnoreCase(key)) {
+            return now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+        return null;
     }
 
     private String formatDate(String dateKey, String format) {

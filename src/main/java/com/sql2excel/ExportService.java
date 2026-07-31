@@ -2,9 +2,13 @@ package com.sql2excel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sql2excel.config.DatabaseConfig;
+import com.sql2excel.config.DynamicVarConfig;
 import com.sql2excel.config.ExcelConfig;
 import com.sql2excel.config.QueryConfig;
 import com.sql2excel.config.SheetConfig;
+import com.sql2excel.database.DatabaseAdapter;
+import com.sql2excel.database.DatabaseAdapterFactory;
+import com.sql2excel.database.DatabaseType;
 import com.sql2excel.excel.ExcelExporter;
 import com.sql2excel.query.QueryExecutor;
 import com.sql2excel.query.QueryResult;
@@ -33,6 +37,9 @@ public class ExportService {
         Map<String, QueryExecutor> executors = new LinkedHashMap<>();
 
         try {
+            resolveDynamicVars(queryConfig.getDynamicVars(), databases,
+                    excelConfig.getDb() != null ? excelConfig.getDb() : null, vars);
+
             List<SheetConfig> sheetConfigs = queryConfig.getSheets();
             if (sheetConfigs == null || sheetConfigs.isEmpty()) {
                 System.out.println("No sheets to export.");
@@ -59,8 +66,13 @@ public class ExportService {
                     throw new IllegalStateException("database not found: " + dbKey);
                 }
 
+                Map<String, Object> sheetVars = new LinkedHashMap<>(vars);
+                if (sheet.getParams() != null) {
+                    sheetVars.putAll(sheet.getParams());
+                }
+
                 QueryExecutor executor = executors.computeIfAbsent(dbKey, k -> new QueryExecutor(dbConfig));
-                QueryResult result = executor.run(sheet, vars, excelConfig.getMaxRows());
+                QueryResult result = executor.run(sheet, sheetVars, excelConfig.getMaxRows());
 
                 List<String> columns = result.getRows().isEmpty()
                         ? Collections.emptyList()
@@ -76,7 +88,7 @@ public class ExportService {
                     filteredRows.add(filtered);
                 }
 
-                String sheetName = new VariableResolver().resolve(sheet.getName(), vars);
+                String sheetName = new VariableResolver().resolve(sheet.getName(), sheetVars);
                 Map<String, Object> header = sheet.getHeader() != null ? sheet.getHeader() : excelConfig.getHeader();
                 Map<String, Object> body = sheet.getBody() != null ? sheet.getBody() : excelConfig.getBody();
                 List<String> hiddenColumns = parseColumns(sheet.getHiddenColumns());
@@ -162,5 +174,78 @@ public class ExportService {
             }
         }
         return result;
+    }
+
+    private static void resolveDynamicVars(List<DynamicVarConfig> dynamicVars,
+                                          Map<String, DatabaseConfig> databases,
+                                          String defaultDb,
+                                          Map<String, Object> vars) throws Exception {
+        if (dynamicVars == null || dynamicVars.isEmpty()) {
+            return;
+        }
+        Map<String, DatabaseAdapter> adapters = new LinkedHashMap<>();
+        try {
+            for (DynamicVarConfig dv : dynamicVars) {
+                String dbKey = dv.getDb() != null ? dv.getDb() : defaultDb;
+                if (dbKey == null) {
+                    throw new IllegalStateException("no database specified for dynamic var: " + dv.getName());
+                }
+                DatabaseConfig dbConfig = databases.get(dbKey);
+                if (dbConfig == null) {
+                    throw new IllegalStateException("database not found for dynamic var: " + dbKey);
+                }
+                DatabaseAdapter adapter = adapters.computeIfAbsent(dbKey, k -> DatabaseAdapterFactory.createAdapter(dbConfig));
+                if (adapter == null) {
+                    throw new IllegalStateException("failed to create adapter for dynamic var: " + dbKey);
+                }
+                if (!adapter.testConnection()) {
+                    adapter.connect();
+                }
+
+                DatabaseType type = DatabaseType.fromString(dbConfig.getType());
+                String sql = type.replaceGetDate(dv.getQuery());
+                QueryResult result = adapter.executeQuery(sql, null);
+
+                if (result == null || result.getRows() == null || result.getRows().isEmpty()) {
+                    continue;
+                }
+
+                List<String> columns = new ArrayList<>(result.getRows().get(0).keySet());
+                Map<String, List<Object>> columnLists = new LinkedHashMap<>();
+                for (String col : columns) {
+                    columnLists.put(col, new ArrayList<>());
+                }
+                for (Map<String, Object> row : result.getRows()) {
+                    for (String col : columns) {
+                        columnLists.get(col).add(row.get(col));
+                    }
+                }
+
+                if ("key_value_pairs".equalsIgnoreCase(dv.getType()) && columns.size() >= 2) {
+                    String firstKey = columns.get(0);
+                    String secondKey = columns.get(1);
+                    List<Object> firstList = columnLists.get(firstKey);
+                    List<Object> secondList = columnLists.get(secondKey);
+                    for (int i = 0; i < firstList.size() && i < secondList.size(); i++) {
+                        Object key = firstList.get(i);
+                        if (key != null) {
+                            String varName = dv.getName() + "." + key.toString().trim();
+                            vars.put(varName, secondList.get(i));
+                        }
+                    }
+                }
+
+                for (Map.Entry<String, List<Object>> entry : columnLists.entrySet()) {
+                    vars.put(dv.getName() + "." + entry.getKey(), entry.getValue());
+                }
+            }
+        } finally {
+            for (DatabaseAdapter adapter : adapters.values()) {
+                try {
+                    adapter.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
     }
 }
