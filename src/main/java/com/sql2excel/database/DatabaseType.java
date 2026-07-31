@@ -2,6 +2,8 @@ package com.sql2excel.database;
 
 import com.sql2excel.config.DatabaseConfig;
 
+import java.util.Map;
+
 public enum DatabaseType {
     MSSQL,
     MYSQL,
@@ -56,18 +58,32 @@ public enum DatabaseType {
         int port = config.getPort() > 0 ? config.getPort() : 1433;
         StringBuilder sb = new StringBuilder("jdbc:sqlserver://")
                 .append(host).append(":").append(port).append(";");
+
         if (config.getDatabase() != null && !config.getDatabase().isEmpty()) {
             sb.append("databaseName=").append(config.getDatabase()).append(";");
         }
-        sb.append("encrypt=false;");
-        if (config.option("trustServerCertificate") != null) {
-            sb.append("trustServerCertificate=").append(config.option("trustServerCertificate")).append(";");
+
+        Map<String, Object> options = config.getOptions();
+        if (options != null) {
+            for (String key : options.keySet()) {
+                Object value = options.get(key);
+                if (value == null) {
+                    continue;
+                }
+                if ("connectionTimeout".equalsIgnoreCase(key)) {
+                    sb.append("loginTimeout=").append(asSeconds(value)).append(";");
+                } else if ("loginTimeout".equalsIgnoreCase(key)) {
+                    sb.append("loginTimeout=").append(value).append(";");
+                } else {
+                    sb.append(key).append("=").append(value).append(";");
+                }
+            }
         }
-        if (config.option("loginTimeout") != null) {
-            sb.append("loginTimeout=").append(config.option("loginTimeout")).append(";");
-        } else if (config.option("connectionTimeout") != null) {
-            sb.append("loginTimeout=").append(asSeconds(config.option("connectionTimeout"))).append(";");
+
+        if (config.option("encrypt") == null) {
+            sb.append("encrypt=false;");
         }
+
         return sb.toString();
     }
 
