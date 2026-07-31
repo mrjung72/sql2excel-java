@@ -155,7 +155,9 @@ public class ConfigLoader {
 
             NodeList queryNodes = el.getElementsByTagName("query");
             if (queryNodes.getLength() > 0) {
-                sheet.setQuery(queryNodes.item(0).getTextContent().trim());
+                Element queryEl = (Element) queryNodes.item(0);
+                sheet.setQuery(queryEl.getTextContent().trim());
+                sheet.setHiddenColumns(getAttr(queryEl, "hide_columns"));
             } else {
                 StringBuilder sql = new StringBuilder();
                 NodeList children = el.getChildNodes();

@@ -15,6 +15,8 @@ public class SheetConfig {
     private String aggregateColumn;
     @JsonProperty("exceptColumns")
     private String exceptColumns;
+    @JsonProperty("hiddenColumns")
+    private String hiddenColumns;
     @JsonProperty("maxRows")
     private Integer maxRows;
     private String style;
@@ -70,6 +72,14 @@ public class SheetConfig {
 
     public void setExceptColumns(String exceptColumns) {
         this.exceptColumns = exceptColumns;
+    }
+
+    public String getHiddenColumns() {
+        return hiddenColumns;
+    }
+
+    public void setHiddenColumns(String hiddenColumns) {
+        this.hiddenColumns = hiddenColumns;
     }
 
     public Integer getMaxRows() {

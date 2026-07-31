@@ -91,6 +91,14 @@ public class ExcelExporter {
             }
         }
 
+        // Hide columns
+        for (String col : data.getHiddenColumns()) {
+            int index = columns.indexOf(col);
+            if (index >= 0) {
+                sheet.setColumnHidden(index, true);
+            }
+        }
+
         // Freeze header row
         sheet.createFreezePane(0, 1);
         return sheetName;
@@ -412,14 +420,22 @@ public class ExcelExporter {
         private final List<Map<String, Object>> rows;
         private final Map<String, Object> header;
         private final Map<String, Object> body;
+        private final List<String> hiddenColumns;
 
         public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
                          Map<String, Object> header, Map<String, Object> body) {
+            this(name, columns, rows, header, body, Collections.emptyList());
+        }
+
+        public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
+                         Map<String, Object> header, Map<String, Object> body,
+                         List<String> hiddenColumns) {
             this.name = name;
             this.columns = columns;
             this.rows = rows;
             this.header = header;
             this.body = body;
+            this.hiddenColumns = hiddenColumns;
         }
 
         public String getName() {
@@ -440,6 +456,10 @@ public class ExcelExporter {
 
         public Map<String, Object> getBody() {
             return body;
+        }
+
+        public List<String> getHiddenColumns() {
+            return hiddenColumns;
         }
     }
 }

@@ -79,7 +79,8 @@ public class ExportService {
                 String sheetName = new VariableResolver().resolve(sheet.getName(), vars);
                 Map<String, Object> header = sheet.getHeader() != null ? sheet.getHeader() : excelConfig.getHeader();
                 Map<String, Object> body = sheet.getBody() != null ? sheet.getBody() : excelConfig.getBody();
-                sheets.add(new ExcelExporter.SheetData(sheetName, columns, filteredRows, header, body));
+                List<String> hiddenColumns = parseColumns(sheet.getHiddenColumns());
+                sheets.add(new ExcelExporter.SheetData(sheetName, columns, filteredRows, header, body, hiddenColumns));
 
                 Map<String, Object> tocRow = new LinkedHashMap<>();
                 tocRow.put("시트명", sheetName);
@@ -147,5 +148,19 @@ public class ExportService {
             }
         }
         return value;
+    }
+
+    private static List<String> parseColumns(String columns) {
+        if (columns == null || columns.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<String> result = new ArrayList<>();
+        for (String s : columns.split(",")) {
+            String trimmed = s.trim();
+            if (!trimmed.isEmpty()) {
+                result.add(trimmed);
+            }
+        }
+        return result;
     }
 }

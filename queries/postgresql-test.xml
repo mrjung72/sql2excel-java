@@ -2,7 +2,7 @@
 <queries>
   <!-- PostgreSQL 테스트 쿼리 -->
   <excel 
-    output="output/postgresql_report_${DATE.KST:YYYYMMDD}.xlsx" 
+    output="output/postgresql_report_${DATE.KST:YYYYMMDD-HHMMSS}.xlsx" 
     db="postgresDB"
     style="modern">
   </excel>
@@ -72,7 +72,7 @@
 
   <!-- 시트 5: 현재 활동 -->
   <sheet name="Current Activity" db="postgresDB">
-    <query>
+    <query hide_columns="query_start,state_change">
       SELECT 
         pid as process_id,
         usename as username,
