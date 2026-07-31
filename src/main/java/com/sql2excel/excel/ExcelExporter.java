@@ -139,6 +139,15 @@ public class ExcelExporter {
             cell.setHyperlink(link);
             cell.setCellStyle(createHyperlinkStyle(workbook, cell.getCellStyle()));
         }
+
+        // Limit TOC row height to a maximum of 50 points
+        for (int i = 0; i <= tocSheet.getLastRowNum(); i++) {
+            Row row = tocSheet.getRow(i);
+            if (row == null) {
+                continue;
+            }
+            row.setHeightInPoints(50f);
+        }
     }
 
     private CellStyle createHyperlinkStyle(XSSFWorkbook workbook, CellStyle baseStyle) {
