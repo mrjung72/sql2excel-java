@@ -52,7 +52,10 @@ public class ExcelExporter {
 
     private String addSheet(XSSFWorkbook workbook, SheetData data, Set<String> usedNames) {
         CellStyle headerStyle = createStyle(workbook, data.getHeader());
-        CellStyle bodyStyle = createStyle(workbook, data.getBody());
+        Map<String, CellStyle> bodyStyles = createBodyStyles(workbook, data.getBody());
+        CellStyle defaultBodyStyle = bodyStyles.get("default");
+        CellStyle numberBodyStyle = bodyStyles.getOrDefault("number", defaultBodyStyle);
+        CellStyle dateBodyStyle = bodyStyles.getOrDefault("date", defaultBodyStyle);
         String sheetName = makeUniqueSheetName(data.getName(), usedNames);
         Sheet sheet = workbook.createSheet(sheetName);
 
@@ -67,8 +70,8 @@ public class ExcelExporter {
                 String excelFormat = DateFormatConverter.convert(Locale.getDefault(), dateColumnFormat);
                 short fmt = workbook.createDataFormat().getFormat(excelFormat);
                 dateStyle = workbook.createCellStyle();
-                if (bodyStyle != null) {
-                    dateStyle.cloneStyleFrom(bodyStyle);
+                if (dateBodyStyle != null) {
+                    dateStyle.cloneStyleFrom(dateBodyStyle);
                 }
                 dateStyle.setDataFormat(fmt);
             } catch (Exception ignored) {
@@ -93,10 +96,16 @@ public class ExcelExporter {
                 Cell cell = row.createCell(i);
                 Object value = record.get(columns.get(i));
                 setCellValue(cell, value);
-                if (isDateValue(value) && dateStyle != null) {
-                    cell.setCellStyle(dateStyle);
-                } else if (bodyStyle != null) {
-                    cell.setCellStyle(bodyStyle);
+                if (isDateValue(value)) {
+                    if (dateStyle != null) {
+                        cell.setCellStyle(dateStyle);
+                    } else if (dateBodyStyle != null) {
+                        cell.setCellStyle(dateBodyStyle);
+                    }
+                } else if (value instanceof Number && numberBodyStyle != null) {
+                    cell.setCellStyle(numberBodyStyle);
+                } else if (defaultBodyStyle != null) {
+                    cell.setCellStyle(defaultBodyStyle);
                 }
             }
         }
@@ -305,6 +314,94 @@ public class ExcelExporter {
         }
 
         return style;
+    }
+
+    private Map<String, CellStyle> createBodyStyles(XSSFWorkbook workbook, Map<String, Object> body) {
+        Map<String, CellStyle> result = new HashMap<>();
+        if (body == null || body.isEmpty()) {
+            return result;
+        }
+        boolean nested = body.containsKey("default") && body.get("default") instanceof Map;
+        @SuppressWarnings("unchecked")
+        Map<String, Object> defaultMap = nested ? (Map<String, Object>) body.get("default") : body;
+        CellStyle defaultStyle = createStyle(workbook, defaultMap);
+        result.put("default", defaultStyle);
+        result.put("number", createDerivedBodyStyle(workbook, body, "number", nested, defaultMap, defaultStyle));
+        result.put("date", createDerivedBodyStyle(workbook, body, "date", nested, defaultMap, defaultStyle));
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private CellStyle createDerivedBodyStyle(XSSFWorkbook workbook, Map<String, Object> body, String key,
+                                             boolean nested, Map<String, Object> defaultMap, CellStyle defaultStyle) {
+        if (!nested) {
+            return defaultStyle;
+        }
+        Map<String, Object> subMap = body.containsKey(key) && body.get(key) instanceof Map
+                ? (Map<String, Object>) body.get(key)
+                : defaultMap;
+        if (subMap == defaultMap) {
+            return defaultStyle;
+        }
+        CellStyle derived = createStyle(workbook, subMap);
+        if ("number".equals(key)) {
+            applyNumberFormat(workbook, derived, subMap);
+        }
+        return derived;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void applyNumberFormat(XSSFWorkbook workbook, CellStyle style, Map<String, Object> styleMap) {
+        if (style == null || styleMap == null) {
+            return;
+        }
+        Object numberFormat = styleMap.get("numberFormat");
+        if (!(numberFormat instanceof Map)) {
+            return;
+        }
+        Map<String, Object> fmtMap = (Map<String, Object>) numberFormat;
+        int decimal = parseIntOrDefault(fmtMap.get("decimal"), 0);
+        boolean thousands = parseBooleanOrDefault(fmtMap.get("thousands"), false);
+        String pattern = buildNumberFormatPattern(decimal, thousands);
+        if (pattern != null) {
+            style.setDataFormat(workbook.createDataFormat().getFormat(pattern));
+        }
+    }
+
+    private String buildNumberFormatPattern(int decimal, boolean thousands) {
+        if (decimal < 0) {
+            decimal = 0;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(thousands ? "#,##0" : "0");
+        if (decimal > 0) {
+            sb.append(".");
+            for (int i = 0; i < decimal; i++) {
+                sb.append("0");
+            }
+        }
+        return sb.toString();
+    }
+
+    private int parseIntOrDefault(Object obj, int defaultValue) {
+        if (obj == null) {
+            return defaultValue;
+        }
+        try {
+            if (obj instanceof Number) {
+                return ((Number) obj).intValue();
+            }
+            return Integer.parseInt(obj.toString());
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    private boolean parseBooleanOrDefault(Object obj, boolean defaultValue) {
+        if (obj == null) {
+            return defaultValue;
+        }
+        return Boolean.TRUE.equals(obj) || "true".equalsIgnoreCase(String.valueOf(obj));
     }
 
     private void setCellValue(Cell cell, Object value) {

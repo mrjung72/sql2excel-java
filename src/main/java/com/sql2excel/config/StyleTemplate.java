@@ -34,7 +34,7 @@ public class StyleTemplate {
         if (config == null || config.getStyle() == null || config.getStyle().isEmpty()) {
             return;
         }
-        Style style = TEMPLATES.get(config.getStyle().toLowerCase());
+        Style style = resolveStyle(config.getStyle());
         if (style == null) {
             return;
         }
@@ -50,7 +50,7 @@ public class StyleTemplate {
         if (sheet == null || sheet.getStyle() == null || sheet.getStyle().isEmpty()) {
             return;
         }
-        Style style = TEMPLATES.get(sheet.getStyle().toLowerCase());
+        Style style = resolveStyle(sheet.getStyle());
         if (style == null) {
             return;
         }
@@ -72,8 +72,20 @@ public class StyleTemplate {
     }
 
     public static Map<String, Object> getStyleBody(String name) {
-        Style style = TEMPLATES.get(name != null ? name.toLowerCase() : "");
+        Style style = resolveStyle(name);
         return style != null ? style.body : null;
+    }
+
+    private static Style resolveStyle(String name) {
+        if (name == null || name.isEmpty()) {
+            return TEMPLATES.get("default");
+        }
+        String key = name.toLowerCase();
+        Style style = TEMPLATES.get(key);
+        if (style == null && !"default".equals(key)) {
+            style = TEMPLATES.get("default");
+        }
+        return style;
     }
 
     private static class Style {
