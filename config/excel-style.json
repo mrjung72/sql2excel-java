@@ -12,22 +12,6 @@
         "fill": { "color": "D9E1F2" },
         "alignment": { "horizontal": "left", "vertical": "middle" },
         "border": { "all": { "style": "thin", "color": "000000" } }
-      }
-    }
-  },
-  "modern": {
-    "header": {
-      "font": { "name": "Arial", "size": 12, "bold": true, "color": "FFFFFF" },
-      "fill": { "color": "4472C4" },
-      "alignment": { "horizontal": "center", "vertical": "middle" },
-      "border": { "all": { "style": "thin", "color": "000000" } }
-    },
-    "body": {
-      "default": {
-        "font": { "name": "Arial", "size": 11, "color": "000000" },
-        "fill": { "color": "D9E1F2" },
-        "alignment": { "horizontal": "left", "vertical": "middle" },
-        "border": { "all": { "style": "thin", "color": "000000" } }
       },
       "number": {
         "font": { "name": "Arial", "size": 11, "color": "000000" },
@@ -44,6 +28,158 @@
         "fill": { "color": "D9E1F2" },
         "alignment": { "horizontal": "center", "vertical": "middle" },
         "border": { "all": { "style": "thin", "color": "000000" } }
+      }
+    }
+  },
+  "modern": {
+    "header": {
+      "font": { "name": "Arial", "size": 12, "bold": true, "color": "FFFFFF" },
+      "fill": { "color": "4472C4" }
+    },
+    "body": {
+      "default": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "D9E1F2" }
+      },
+      "number": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "D9E1F2" },
+        "numberFormat": {
+          "decimal": 2,
+          "thousands": true
+        }
+      },
+      "date": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "D9E1F2" }
+      }
+    }
+  },
+  "dark": {
+    "header": {
+      "font": { "name": "Arial", "size": 12, "bold": true, "color": "FFFFFF" },
+      "fill": { "color": "404040" },
+      "alignment": { "horizontal": "center", "vertical": "middle" },
+      "border": { "all": { "style": "thin", "color": "000000" } }
+    },
+    "body": {
+      "default": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "F2F2F2" },
+        "alignment": { "horizontal": "center", "vertical": "middle" },
+        "border": { "all": { "style": "thin", "color": "000000" } }
+      },
+      "number": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "F2F2F2" },
+        "numberFormat": {
+          "decimal": 1,
+          "thousands": false
+        }
+      },
+      "date": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "F2F2F2" }
+      }
+    }
+  },
+  "colorful": {
+    "header": {
+      "font": { "name": "Arial", "size": 12, "bold": true, "color": "FFFFFF" },
+      "fill": { "color": "70AD47" }
+    },
+    "body": {
+      "default": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "E2EFDA" }
+      },
+      "number": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "E2EFDA" },
+        "numberFormat": {
+          "decimal": 3,
+          "thousands": true
+        }
+      },
+      "date": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "E2EFDA" }
+      }
+    }
+  },
+  "minimal": {
+    "header": {
+      "font": { "name": "Arial", "size": 11, "bold": true, "color": "000000" }
+    },
+    "body": {}
+  },
+  "business": {
+    "header": {
+      "font": { "name": "Arial", "size": 12, "bold": true, "color": "FFFFFF" },
+      "fill": { "color": "203864" },
+      "alignment": { "horizontal": "center", "vertical": "middle" },
+      "border": { "all": { "style": "thin", "color": "000000" } }
+    },
+    "body": {
+      "default": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "D9E1F2" }
+      },
+      "number": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "D9E1F2" },
+        "numberFormat": {
+          "decimal": 0,
+          "thousands": false
+        }
+      },
+      "date": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "D9E1F2" }
+      }
+    }
+  },
+  "premium": {
+    "header": {
+      "font": { "name": "Arial", "size": 12, "bold": true, "color": "FFFFFF" },
+      "fill": { "color": "7030A0" },
+      "alignment": { "horizontal": "center", "vertical": "middle" },
+      "border": { "all": { "style": "thin", "color": "000000" } }
+    },
+    "body": {
+      "default": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "E4DFEC" }
+      },
+      "number": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "E4DFEC" }
+      },
+      "date": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "E4DFEC" }
+      }
+    }
+  },
+  "professional": {
+    "header": {
+      "font": { "name": "Arial", "size": 12, "bold": true, "color": "FFFFFF" },
+      "fill": { "color": "1F4E78" },
+      "alignment": { "horizontal": "center", "vertical": "middle" },
+      "border": { "all": { "style": "thin", "color": "000000" } }
+    },
+    "body": {
+      "default": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "DEEBF7" }
+      },
+      "number": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "DEEBF7" }
+      },
+      "date": {
+        "font": { "name": "Arial", "size": 11, "color": "000000" },
+        "fill": { "color": "DEEBF7" }
       }
     }
   }
