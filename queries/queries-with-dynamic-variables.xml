@@ -1,6 +1,6 @@
 <queries>
   <excel db="postgresDB" 
-    output="output/dynamic_variables_test_${DATE:yyyyMMddhhmmss}.csv" 
+    output="output/dynamic_variables_test_${DATE:yyyyMMddhhmmss}.xlsx" 
     maxRows="20" 
     style="modern" 
     aggregateInfoTemplate="Related data {count} records {details}"
@@ -25,8 +25,7 @@
   <dynamicVars>
          <!-- Default type (column_identified): Create arrays for each column -->
     <dynamicVar name="customerData" 
-      description="Customer data by column" 
-      db="mysqlDB">
+      description="Customer data by column">
       <![CDATA[
         SELECT DISTINCT CustomerID, CustomerName, City, Region, CustomerType
         FROM Customers
@@ -38,8 +37,7 @@
     <!-- key_value_pairs type: First column as key, second column as value -->
     <dynamicVar name="orderDetails" 
       type="key_value_pairs" 
-      description="Order detail information" 
-      db="sampleDB">
+      description="Order detail information">
       <![CDATA[
         SELECT DISTINCT OrderID, OrderDetailID
         FROM OrderDetails
@@ -50,7 +48,7 @@
       <!-- Default type (column_identified): Create arrays for each column -->
       <dynamicVar name="activeOrders" 
         description="Active orders list" 
-        db="mariadb">
+        db="mariaDB">
        <![CDATA[
          SELECT distinct OrderID
          FROM Orders
@@ -61,7 +59,7 @@
            <!-- Default type (column_identified): Dynamic variable combining datetime functions and regular variables -->
       <dynamicVar name="recentOrders" 
         description="Recent orders information" 
-        db="sqliteDB">
+        db="mariaDB">
        <![CDATA[
          SELECT distinct OrderID, OrderNumber, OrderDate
          FROM Orders

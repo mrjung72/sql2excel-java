@@ -1,8 +1,8 @@
 <queries>
   <excel db="postgresDB" 
     output="output/sales_summary_${DATE.KST:yyyyMMddhhmmss}.xlsx" 
-    maxRows="200" 
-    style="modern"
+    maxRows="20000" 
+    style="default"
     date-column-format="yyyy/MM/dd hh:mm:ss">
   </excel>
 
@@ -19,7 +19,8 @@
   <sheet name="${envType}_Order_List" 
     use="true" 
     aggregateColumn="PaymentMethod" 
-    maxRows="100">
+    maxRows="100"
+	style="modern">
     <![CDATA[
       SELECT 
         OrderNumber as OrderNumber,
@@ -45,7 +46,8 @@
   </sheet>
   <sheet name="Customer_Details_Regional_Statistics_Summary" 
     use="true" 
-    db="postgresDB">
+    db="postgresDB"
+	style="colorful">
     <![CDATA[
       SELECT 
         o.OrderNumber as OrderNumber,
@@ -65,7 +67,8 @@
   <sheet name="Wildcard_Customer" 
     use="true" 
     exceptColumns="IsActive,CreatedDate,LastUpdated" 
-    db="mariaDB">
+    db="mariaDB"
+	style="minimal">
     <![CDATA[
       SELECT c.*
       FROM Orders o
@@ -78,7 +81,8 @@
   <sheet name="Wildcard_Order" 
     use="true" 
     exceptColumns="OrderDate,RequiredDate,ShippedDate" 
-    db="mariaDB">
+    db="mariaDB"
+	style="business">
     <![CDATA[
       SELECT o.*
       FROM Orders o
@@ -91,7 +95,8 @@
   <sheet name="Orders_By_Status" 
     use="true" 
     aggregateColumn="OrderStatus" 
-    exceptColumns="OrderDate,RequiredDate,ShippedDate">
+    exceptColumns="OrderDate,RequiredDate,ShippedDate"
+	style="premium">
     <![CDATA[
       SELECT *
       FROM Orders
