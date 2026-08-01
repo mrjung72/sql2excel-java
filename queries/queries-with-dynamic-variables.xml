@@ -26,7 +26,7 @@
          <!-- Default type (column_identified): Create arrays for each column -->
     <dynamicVar name="customerData" 
       description="Customer data by column" 
-      db="postgresDB">
+      db="mysqlDB">
       <![CDATA[
         SELECT DISTINCT CustomerID, CustomerName, City, Region, CustomerType
         FROM Customers
@@ -39,7 +39,7 @@
     <dynamicVar name="orderDetails" 
       type="key_value_pairs" 
       description="Order detail information" 
-      db="postgresDB">
+      db="sampleDB">
       <![CDATA[
         SELECT DISTINCT OrderID, OrderDetailID
         FROM OrderDetails
@@ -50,7 +50,7 @@
       <!-- Default type (column_identified): Create arrays for each column -->
       <dynamicVar name="activeOrders" 
         description="Active orders list" 
-        db="postgresDB">
+        db="mariadb">
        <![CDATA[
          SELECT distinct OrderID
          FROM Orders
@@ -61,7 +61,7 @@
            <!-- Default type (column_identified): Dynamic variable combining datetime functions and regular variables -->
       <dynamicVar name="recentOrders" 
         description="Recent orders information" 
-        db="postgresDB">
+        db="sqliteDB">
        <![CDATA[
          SELECT distinct OrderID, OrderNumber, OrderDate
          FROM Orders

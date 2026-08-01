@@ -19,8 +19,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ExportService {
 
@@ -32,6 +34,11 @@ public class ExportService {
         if (excelConfig == null) {
             throw new IllegalStateException("excel config is missing");
         }
+
+        if (!checkAllDatabaseConnections(queryConfig, databases)) {
+            return 1;
+        }
+
         List<ExcelExporter.SheetData> sheets = new ArrayList<>();
         List<Map<String, Object>> tocRows = new ArrayList<>();
         Map<String, QueryExecutor> executors = new LinkedHashMap<>();
@@ -161,6 +168,80 @@ public class ExportService {
             }
         }
         return value;
+    }
+
+    private static boolean checkAllDatabaseConnections(QueryConfig queryConfig,
+                                                       Map<String, DatabaseConfig> databases) {
+        ExcelConfig excelConfig = queryConfig.getExcel();
+        String defaultDb = excelConfig != null ? excelConfig.getDb() : null;
+
+        Set<String> dbKeys = new LinkedHashSet<>();
+        if (defaultDb != null && !defaultDb.isEmpty()) {
+            dbKeys.add(defaultDb);
+        }
+
+        List<DynamicVarConfig> dynamicVars = queryConfig.getDynamicVars();
+        if (dynamicVars != null) {
+            for (DynamicVarConfig dv : dynamicVars) {
+                if (dv == null) {
+                    continue;
+                }
+                String db = dv.getDb() != null ? dv.getDb() : defaultDb;
+                if (db != null && !db.isEmpty()) {
+                    dbKeys.add(db);
+                }
+            }
+        }
+
+        List<SheetConfig> sheetConfigs = queryConfig.getSheets();
+        if (sheetConfigs != null) {
+            for (SheetConfig sheet : sheetConfigs) {
+                if (sheet == null) {
+                    continue;
+                }
+                if (sheet.getUse() == null || !sheet.getUse()) {
+                    continue;
+                }
+                String db = sheet.getDb() != null ? sheet.getDb() : defaultDb;
+                if (db != null && !db.isEmpty()) {
+                    dbKeys.add(db);
+                }
+            }
+        }
+
+        boolean allOk = true;
+        for (String dbKey : dbKeys) {
+            DatabaseConfig dbConfig = databases.get(dbKey);
+            if (dbConfig == null) {
+                System.out.println("[DB Check] " + dbKey + " ... NOT FOUND (dbinfo.json)");
+                allOk = false;
+                continue;
+            }
+            DatabaseAdapter adapter = null;
+            try {
+                adapter = DatabaseAdapterFactory.createAdapter(dbConfig);
+                boolean ok = adapter.testConnection();
+                String type = dbConfig.getType() != null ? dbConfig.getType() : "?";
+                if (ok) {
+                    System.out.println("[DB Check] " + dbKey + " (" + type + ") ... OK");
+                } else {
+                    System.out.println("[DB Check] " + dbKey + " (" + type + ") ... FAIL");
+                    allOk = false;
+                }
+            } catch (Exception e) {
+                String type = dbConfig.getType() != null ? dbConfig.getType() : "?";
+                System.out.println("[DB Check] " + dbKey + " (" + type + ") ... FAIL - " + e.getMessage());
+                allOk = false;
+            } finally {
+                if (adapter != null) {
+                    try {
+                        adapter.close();
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        }
+        return allOk;
     }
 
     private static List<String> parseColumns(String columns) {
