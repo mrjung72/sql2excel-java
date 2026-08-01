@@ -96,6 +96,7 @@ public class ConfigLoader {
                 }
             }
             excel.setStyle(getAttr(el, "style"));
+            excel.setDateColumnFormat(getAttr(el, "date-column-format"));
         }
         return excel;
     }
@@ -176,6 +177,7 @@ public class ConfigLoader {
             sheet.setAggregateColumn(getAttr(el, "aggregateColumn"));
             sheet.setExceptColumns(getAttr(el, "exceptColumns"));
             sheet.setStyle(getAttr(el, "style"));
+            sheet.setDateColumnFormat(getAttr(el, "date-column-format"));
             sheet.setQueryRef(getAttr(el, "queryRef"));
 
             sheet.setParams(parseSheetParams(el));

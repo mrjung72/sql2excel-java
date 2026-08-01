@@ -12,6 +12,7 @@ public class ExcelConfig {
     private Map<String, Object> header;
     private Map<String, Object> body;
     private String style;
+    private String dateColumnFormat;
 
     public ExcelConfig() {
     }
@@ -62,5 +63,13 @@ public class ExcelConfig {
 
     public void setStyle(String style) {
         this.style = style;
+    }
+
+    public String getDateColumnFormat() {
+        return dateColumnFormat;
+    }
+
+    public void setDateColumnFormat(String dateColumnFormat) {
+        this.dateColumnFormat = dateColumnFormat;
     }
 }

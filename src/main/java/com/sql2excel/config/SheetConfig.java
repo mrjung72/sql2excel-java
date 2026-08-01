@@ -24,6 +24,7 @@ public class SheetConfig {
     @JsonProperty("maxRows")
     private Integer maxRows;
     private String style;
+    private String dateColumnFormat;
     private Map<String, Object> header;
     private Map<String, Object> body;
 
@@ -116,6 +117,14 @@ public class SheetConfig {
 
     public void setStyle(String style) {
         this.style = style;
+    }
+
+    public String getDateColumnFormat() {
+        return dateColumnFormat;
+    }
+
+    public void setDateColumnFormat(String dateColumnFormat) {
+        this.dateColumnFormat = dateColumnFormat;
     }
 
     public Map<String, Object> getHeader() {

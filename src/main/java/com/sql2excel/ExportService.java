@@ -92,7 +92,8 @@ public class ExportService {
                 Map<String, Object> header = sheet.getHeader() != null ? sheet.getHeader() : excelConfig.getHeader();
                 Map<String, Object> body = sheet.getBody() != null ? sheet.getBody() : excelConfig.getBody();
                 List<String> hiddenColumns = parseColumns(sheet.getHiddenColumns());
-                sheets.add(new ExcelExporter.SheetData(sheetName, columns, filteredRows, header, body, hiddenColumns));
+                String dateColumnFormat = sheet.getDateColumnFormat() != null ? sheet.getDateColumnFormat() : excelConfig.getDateColumnFormat();
+                sheets.add(new ExcelExporter.SheetData(sheetName, columns, filteredRows, header, body, hiddenColumns, dateColumnFormat));
 
                 Map<String, Object> tocRow = new LinkedHashMap<>();
                 tocRow.put("시트명", sheetName);

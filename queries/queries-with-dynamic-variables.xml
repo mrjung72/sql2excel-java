@@ -1,5 +1,10 @@
 <queries>
-  <excel db="postgresDB" output="output/dynamic_variables_test_${DATE:yyyyMMddhhmmss}.xlsx" maxRows="20" style="modern" aggregateInfoTemplate="Related data {count} records {details}">
+  <excel db="postgresDB" 
+    output="output/dynamic_variables_test_${DATE:yyyyMMddhhmmss}.xlsx" 
+    maxRows="20" 
+    style="modern" 
+    aggregateInfoTemplate="Related data {count} records {details}"
+    date-column-format="yyyy-MM-dd">
     <!-- Style template ID (default: default) -->
     <!-- Available templates: default, modern, dark, colorful, minimal, business, premium -->
     <!-- Can be overridden with individual style attributes if needed -->
@@ -19,7 +24,9 @@
   <!-- Dynamic variable definitions -->
   <dynamicVars>
          <!-- Default type (column_identified): Create arrays for each column -->
-    <dynamicVar name="customerData" description="Customer data by column" db="postgresDB">
+    <dynamicVar name="customerData" 
+      description="Customer data by column" 
+      db="postgresDB">
       <![CDATA[
         SELECT DISTINCT CustomerID, CustomerName, City, Region, CustomerType
         FROM Customers
@@ -29,7 +36,10 @@
     </dynamicVar>
     
     <!-- key_value_pairs type: First column as key, second column as value -->
-    <dynamicVar name="orderDetails" type="key_value_pairs" description="Order detail information" db="postgresDB">
+    <dynamicVar name="orderDetails" 
+      type="key_value_pairs" 
+      description="Order detail information" 
+      db="postgresDB">
       <![CDATA[
         SELECT DISTINCT OrderID, OrderDetailID
         FROM OrderDetails
@@ -38,7 +48,9 @@
     </dynamicVar>
     
       <!-- Default type (column_identified): Create arrays for each column -->
-      <dynamicVar name="activeOrders" description="Active orders list" db="postgresDB">
+      <dynamicVar name="activeOrders" 
+        description="Active orders list" 
+        db="postgresDB">
        <![CDATA[
          SELECT distinct OrderID
          FROM Orders
@@ -47,7 +59,9 @@
      </dynamicVar>
      
            <!-- Default type (column_identified): Dynamic variable combining datetime functions and regular variables -->
-      <dynamicVar name="recentOrders" description="Recent orders information" db="postgresDB">
+      <dynamicVar name="recentOrders" 
+        description="Recent orders information" 
+        db="postgresDB">
        <![CDATA[
          SELECT distinct OrderID, OrderNumber, OrderDate
          FROM Orders
@@ -74,14 +88,24 @@
 
 
   <!-- Sheet definitions -->
-  <sheet name="${envType}_DynamicVar_Seoul_Busan_Test" use="true" queryRef="customer_base" aggregateColumn="Region" aggregateInfoTemplate="Customer distribution by region: {count} records {details}" maxRows="100" db="postgresDB">
+  <sheet name="${envType}_DynamicVar_Seoul_Busan_Test" 
+    use="true" 
+    queryRef="customer_base" 
+    aggregateColumn="Region" 
+    aggregateInfoTemplate="Customer distribution by region: {count} records {details}" 
+    maxRows="100" 
+    db="postgresDB">
     <params>
       <param name="regionList">["서울", "부산"]</param>
     </params>
   </sheet>
   
   
-  <sheet name="OrderDetail_DynamicVar_Test2" use="true" aggregateColumn="OrderStatus" aggregateInfoTemplate="Order status summary: {count} records {details}" db="postgresDB">
+  <sheet name="OrderDetail_DynamicVar_Test2" 
+    use="true" 
+    aggregateColumn="OrderStatus" 
+    aggregateInfoTemplate="Order status summary: {count} records {details}" 
+    db="postgresDB">
     <![CDATA[
       SELECT 
         o.OrderID as OrderID,
@@ -97,7 +121,11 @@
     ]]>
   </sheet>
   
-  <sheet name="OrderDetail_DynamicVar_Test" use="true" aggregateColumn="OrderStatus" aggregateInfoTemplate="Order status analysis: {count} records {details}" db="postgresDB">
+  <sheet name="OrderDetail_DynamicVar_Test" 
+      use="true" 
+      aggregateColumn="OrderStatus" 
+      aggregateInfoTemplate="Order status analysis: {count} records {details}" 
+      db="postgresDB">
     <![CDATA[
       SELECT 
         o.OrderNumber as OrderNumber,
@@ -113,7 +141,10 @@
     ]]>
   </sheet>
   
-  <sheet name="Combined_DynamicVar_Test" use="true" aggregateInfoTemplate="Related data {count} records" db="postgresDB">
+  <sheet name="Combined_DynamicVar_Test" 
+      use="true" 
+      aggregateInfoTemplate="Related data {count} records" 
+      db="postgresDB">
     <![CDATA[
       SELECT 
         c.CustomerName as CustomerName,
@@ -132,7 +163,10 @@
     ]]>
   </sheet>
   
-  <sheet name="TimeFunc_DynamicVar_Test" use="true" db="postgresDB">
+  <sheet name="TimeFunc_DynamicVar_Test" 
+      use="true" 
+      db="postgresDB"
+      date-column-format="yyyy-MM-dd HH:mm:ss">
     <![CDATA[
       SELECT 
         'Current Time' as Category,

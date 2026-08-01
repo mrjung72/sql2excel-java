@@ -5,6 +5,7 @@ import com.sql2excel.config.SheetConfig;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.DateFormatConverter;
 import org.apache.poi.xssf.usermodel.*;
 
 import java.io.File;
@@ -58,6 +59,22 @@ public class ExcelExporter {
         List<String> columns = data.getColumns();
         List<Map<String, Object>> rows = data.getRows();
 
+        // Date column format
+        CellStyle dateStyle = null;
+        String dateColumnFormat = data.getDateColumnFormat();
+        if (dateColumnFormat != null && !dateColumnFormat.isEmpty()) {
+            try {
+                String excelFormat = DateFormatConverter.convert(Locale.getDefault(), dateColumnFormat);
+                short fmt = workbook.createDataFormat().getFormat(excelFormat);
+                dateStyle = workbook.createCellStyle();
+                if (bodyStyle != null) {
+                    dateStyle.cloneStyleFrom(bodyStyle);
+                }
+                dateStyle.setDataFormat(fmt);
+            } catch (Exception ignored) {
+            }
+        }
+
         // Header
         Row header = sheet.createRow(0);
         for (int i = 0; i < columns.size(); i++) {
@@ -74,8 +91,11 @@ public class ExcelExporter {
             Map<String, Object> record = rows.get(r);
             for (int i = 0; i < columns.size(); i++) {
                 Cell cell = row.createCell(i);
-                setCellValue(cell, record.get(columns.get(i)));
-                if (bodyStyle != null) {
+                Object value = record.get(columns.get(i));
+                setCellValue(cell, value);
+                if (isDateValue(value) && dateStyle != null) {
+                    cell.setCellStyle(dateStyle);
+                } else if (bodyStyle != null) {
                     cell.setCellStyle(bodyStyle);
                 }
             }
@@ -292,7 +312,7 @@ public class ExcelExporter {
             cell.setBlank();
         } else if (value instanceof Number) {
             cell.setCellValue(((Number) value).doubleValue());
-        } else if (value instanceof java.sql.Timestamp || value instanceof java.util.Date) {
+        } else if (value instanceof java.util.Date) {
             cell.setCellValue((java.util.Date) value);
         } else if (value instanceof LocalDateTime) {
             cell.setCellValue((LocalDateTime) value);
@@ -303,6 +323,10 @@ public class ExcelExporter {
         } else {
             cell.setCellValue(value.toString());
         }
+    }
+
+    private boolean isDateValue(Object value) {
+        return value instanceof java.util.Date || value instanceof LocalDateTime || value instanceof LocalDate;
     }
 
     private byte[] parseColor(String color) {
@@ -421,21 +445,29 @@ public class ExcelExporter {
         private final Map<String, Object> header;
         private final Map<String, Object> body;
         private final List<String> hiddenColumns;
+        private final String dateColumnFormat;
 
         public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
                          Map<String, Object> header, Map<String, Object> body) {
-            this(name, columns, rows, header, body, Collections.emptyList());
+            this(name, columns, rows, header, body, Collections.emptyList(), null);
         }
 
         public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
                          Map<String, Object> header, Map<String, Object> body,
                          List<String> hiddenColumns) {
+            this(name, columns, rows, header, body, hiddenColumns, null);
+        }
+
+        public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
+                         Map<String, Object> header, Map<String, Object> body,
+                         List<String> hiddenColumns, String dateColumnFormat) {
             this.name = name;
             this.columns = columns;
             this.rows = rows;
             this.header = header;
             this.body = body;
             this.hiddenColumns = hiddenColumns;
+            this.dateColumnFormat = dateColumnFormat;
         }
 
         public String getName() {
@@ -460,6 +492,10 @@ public class ExcelExporter {
 
         public List<String> getHiddenColumns() {
             return hiddenColumns;
+        }
+
+        public String getDateColumnFormat() {
+            return dateColumnFormat;
         }
     }
 }
