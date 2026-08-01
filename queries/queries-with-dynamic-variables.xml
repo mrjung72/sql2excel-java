@@ -1,6 +1,6 @@
 <queries>
   <excel db="postgresDB" 
-    output="output/dynamic_variables_test_${DATE:yyyyMMddhhmmss}.xlsx" 
+    output="output/dynamic_variables_test_${DATE:yyyyMMddhhmmss}.csv" 
     maxRows="20" 
     style="modern" 
     aggregateInfoTemplate="Related data {count} records {details}"

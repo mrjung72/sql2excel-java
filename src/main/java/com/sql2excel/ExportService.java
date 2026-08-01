@@ -6,10 +6,13 @@ import com.sql2excel.config.DynamicVarConfig;
 import com.sql2excel.config.ExcelConfig;
 import com.sql2excel.config.QueryConfig;
 import com.sql2excel.config.SheetConfig;
+import com.sql2excel.csv.CsvExporter;
 import com.sql2excel.database.DatabaseAdapter;
 import com.sql2excel.database.DatabaseAdapterFactory;
 import com.sql2excel.database.DatabaseType;
 import com.sql2excel.excel.ExcelExporter;
+import com.sql2excel.json.JsonExporter;
+import com.sql2excel.xml.XmlExporter;
 import com.sql2excel.query.QueryExecutor;
 import com.sql2excel.query.QueryResult;
 import com.sql2excel.variable.VariableResolver;
@@ -21,6 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -123,10 +127,28 @@ public class ExportService {
                 tocBody.putAll(excelConfig.getBody());
             }
             tocBody.put("wrap", true);
-            sheets.add(0, new ExcelExporter.SheetData("목차", tocColumns, tocRows, tocHeader, tocBody));
 
-            new ExcelExporter().export(outputPath, sheets);
-            System.out.println("Exported to: " + outputPath);
+            String lowerPath = outputPath.toLowerCase(Locale.ROOT);
+            boolean isTextOutput = lowerPath.endsWith(".csv") || lowerPath.endsWith(".txt")
+                    || lowerPath.endsWith(".json") || lowerPath.endsWith(".xml");
+            if (!isTextOutput) {
+                sheets.add(0, new ExcelExporter.SheetData("목차", tocColumns, tocRows, tocHeader, tocBody));
+            }
+
+            List<String> writtenFiles;
+            if (lowerPath.endsWith(".csv") || lowerPath.endsWith(".txt")) {
+                writtenFiles = new CsvExporter().export(outputPath, sheets);
+            } else if (lowerPath.endsWith(".json")) {
+                writtenFiles = new JsonExporter().export(outputPath, sheets);
+            } else if (lowerPath.endsWith(".xml")) {
+                writtenFiles = new XmlExporter().export(outputPath, sheets);
+            } else {
+                new ExcelExporter().export(outputPath, sheets);
+                writtenFiles = Collections.singletonList(outputPath);
+            }
+            for (String path : writtenFiles) {
+                System.out.println("Exported to: " + path);
+            }
             return 0;
         } catch (Exception e) {
             e.printStackTrace();
