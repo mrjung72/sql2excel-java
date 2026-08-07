@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queries>
+  <!-- 동적 시트 샘플 쿼리 -->
+  <excel 
+    output="output/dynamic-sheet-sample_${DATE.KST:YYYYMMDD-HHMMSS}.xlsx" 
+    db="postgresDB"
+    style="modern">
+  </excel>
+
+
+  <!-- Dynamic variable definitions -->
+  <dynamicVars>
+    
+    <!-- key_value_pairs type: First column as key, second column as value -->
+    <dynamicVar name="tables_list" 
+      type="key_value_pairs" 
+      description="Table list">
+      <![CDATA[
+        SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+        ORDER BY table_name
+      ]]>
+    </dynamicVar>
+    
+  </dynamicVars>
+
+  <dynamic-sheet name="${tableName}" db="postgresDB">
+    <query>
+      <![CDATA[
+        SELECT 'CREATE TABLE ' || table_name || ' (' || E'\n' || 
+            string_agg('    ' || column_name || ' ' || 
+                CASE 
+                    -- numeric 타입 등의 precision/scale 처리
+                    WHEN data_type = 'numeric' AND numeric_precision IS NOT NULL 
+                        THEN data_type || '(' || numeric_precision || 
+                            CASE WHEN numeric_scale IS NOT NULL THEN ',' || numeric_scale ELSE '' END || ')'
+                    -- character varying 등의 길이 처리
+                    WHEN character_maximum_length IS NOT NULL 
+                        THEN data_type || '(' || character_maximum_length || ')'
+                    ELSE data_type
+                END || 
+                CASE 
+                    WHEN column_default IS NOT NULL THEN ' DEFAULT ' || column_default
+                    ELSE ''
+                END || 
+                CASE 
+                    WHEN is_nullable = 'NO' THEN ' NOT NULL'
+                    ELSE ''
+                END, 
+                ',' || E'\n'
+            ) || E'\n' || ');' AS create_table_sql
+        FROM information_schema.columns
+        WHERE table_schema = 'public' -- 대상 스키마
+              AND table_name = '${tables_list.tableName}' -- 대상 테이블명
+        GROUP BY table_name;
+        ]]>
+    </query>
+  </dynamic-sheet>
+
+</queries>
+

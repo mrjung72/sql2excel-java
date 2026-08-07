@@ -25,6 +25,7 @@ public class SheetConfig {
     private Integer maxRows;
     private String style;
     private String dateColumnFormat;
+    private String iterVar;
     private Map<String, Object> header;
     private Map<String, Object> body;
 
@@ -125,6 +126,14 @@ public class SheetConfig {
 
     public void setDateColumnFormat(String dateColumnFormat) {
         this.dateColumnFormat = dateColumnFormat;
+    }
+
+    public String getIterVar() {
+        return iterVar;
+    }
+
+    public void setIterVar(String iterVar) {
+        this.iterVar = iterVar;
     }
 
     public Map<String, Object> getHeader() {

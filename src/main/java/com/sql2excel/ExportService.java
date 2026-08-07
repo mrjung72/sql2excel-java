@@ -51,8 +51,9 @@ public class ExportService {
             resolveDynamicVars(queryConfig.getDynamicVars(), databases,
                     excelConfig.getDb() != null ? excelConfig.getDb() : null, vars);
 
-            List<SheetConfig> sheetConfigs = queryConfig.getSheets();
-            if (sheetConfigs == null || sheetConfigs.isEmpty()) {
+            List<SheetConfig> sheetConfigs = new ArrayList<>(queryConfig.getSheets() == null ? Collections.emptyList() : queryConfig.getSheets());
+            sheetConfigs.addAll(expandDynamicSheets(queryConfig.getDynamicSheets(), vars));
+            if (sheetConfigs.isEmpty()) {
                 System.out.println("No sheets to export.");
                 return 0;
             }
@@ -231,6 +232,22 @@ public class ExportService {
             }
         }
 
+        List<SheetConfig> dynamicSheets = queryConfig.getDynamicSheets();
+        if (dynamicSheets != null) {
+            for (SheetConfig sheet : dynamicSheets) {
+                if (sheet == null) {
+                    continue;
+                }
+                if (sheet.getUse() == null || !sheet.getUse()) {
+                    continue;
+                }
+                String db = sheet.getDb() != null ? sheet.getDb() : defaultDb;
+                if (db != null && !db.isEmpty()) {
+                    dbKeys.add(db);
+                }
+            }
+        }
+
         boolean allOk = true;
         for (String dbKey : dbKeys) {
             DatabaseConfig dbConfig = databases.get(dbKey);
@@ -275,6 +292,81 @@ public class ExportService {
             String trimmed = s.trim();
             if (!trimmed.isEmpty()) {
                 result.add(trimmed);
+            }
+        }
+        return result;
+    }
+
+    private static List<SheetConfig> expandDynamicSheets(List<SheetConfig> dynamicSheets,
+                                                         Map<String, Object> vars) {
+        if (dynamicSheets == null || dynamicSheets.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<SheetConfig> result = new ArrayList<>();
+        for (SheetConfig template : dynamicSheets) {
+            if (template == null) {
+                continue;
+            }
+            if (template.getUse() != null && !template.getUse()) {
+                continue;
+            }
+            if (template.getName() == null || template.getName().isEmpty()) {
+                System.err.println("Warning: skipping dynamic-sheet without name.");
+                continue;
+            }
+            String iterVar = template.getIterVar();
+            if (iterVar == null || iterVar.isEmpty()) {
+                throw new IllegalStateException("dynamic-sheet requires 'for' attribute: " + template.getName());
+            }
+            String prefix = iterVar + ".";
+            Map<String, List<Object>> columns = new LinkedHashMap<>();
+            int rowCount = -1;
+            for (Map.Entry<String, Object> entry : vars.entrySet()) {
+                if (entry.getKey() != null && entry.getKey().startsWith(prefix) && entry.getValue() instanceof List) {
+                    String col = entry.getKey().substring(prefix.length());
+                    List<Object> values = (List<Object>) entry.getValue();
+                    columns.put(col, values);
+                    if (rowCount < 0) {
+                        rowCount = values.size();
+                    } else if (rowCount != values.size()) {
+                        throw new IllegalStateException("iterVar columns have different row counts: " + iterVar);
+                    }
+                }
+            }
+            if (columns.isEmpty()) {
+                System.out.println("Warning: dynamic-sheet '" + template.getName() + "' has no iterable data for: " + iterVar);
+                continue;
+            }
+            for (int i = 0; i < rowCount; i++) {
+                Map<String, Object> iterParams = new LinkedHashMap<>();
+                if (template.getParams() != null) {
+                    iterParams.putAll(template.getParams());
+                }
+                for (Map.Entry<String, List<Object>> col : columns.entrySet()) {
+                    Object value = col.getValue().get(i);
+                    iterParams.put(col.getKey(), value);
+                    iterParams.put(prefix + col.getKey(), value);
+                }
+                Map<String, Object> resolveMap = new LinkedHashMap<>(vars);
+                resolveMap.putAll(iterParams);
+                String resolvedName = new VariableResolver().resolve(template.getName(), resolveMap);
+
+                SheetConfig expanded = new SheetConfig();
+                expanded.setName(resolvedName);
+                expanded.setUse(true);
+                expanded.setDb(template.getDb());
+                expanded.setQueryRef(template.getQueryRef());
+                expanded.setQuery(template.getQuery());
+                expanded.setParams(iterParams);
+                expanded.setMaxRows(template.getMaxRows());
+                expanded.setStyle(template.getStyle());
+                expanded.setDateColumnFormat(template.getDateColumnFormat());
+                expanded.setAggregateColumn(template.getAggregateColumn());
+                expanded.setExceptColumns(template.getExceptColumns());
+                expanded.setHiddenColumns(template.getHiddenColumns());
+                expanded.setHeader(template.getHeader());
+                expanded.setBody(template.getBody());
+                result.add(expanded);
             }
         }
         return result;

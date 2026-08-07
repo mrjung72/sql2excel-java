@@ -12,6 +12,7 @@ public class QueryConfig {
     private Map<String, String> queryDefs;
     private List<DynamicVarConfig> dynamicVars;
     private List<SheetConfig> sheets;
+    private List<SheetConfig> dynamicSheets;
 
     public QueryConfig() {
     }
@@ -54,5 +55,13 @@ public class QueryConfig {
 
     public void setSheets(List<SheetConfig> sheets) {
         this.sheets = sheets;
+    }
+
+    public List<SheetConfig> getDynamicSheets() {
+        return dynamicSheets;
+    }
+
+    public void setDynamicSheets(List<SheetConfig> dynamicSheets) {
+        this.dynamicSheets = dynamicSheets;
     }
 }

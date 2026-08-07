@@ -70,6 +70,7 @@ public class ConfigLoader {
             qc.setQueryDefs(parseQueryDefs(root));
             qc.setDynamicVars(parseDynamicVars(root));
             qc.setSheets(parseSheets(root, qc.getVars(), qc.getQueryDefs()));
+            qc.setDynamicSheets(parseDynamicSheets(root, qc.getVars(), qc.getQueryDefs()));
             applyStyles(qc);
 
             return qc;
@@ -211,6 +212,61 @@ public class ConfigLoader {
         return sheets;
     }
 
+    private List<SheetConfig> parseDynamicSheets(Element root, Map<String, Object> vars, Map<String, String> queryDefs) {
+        List<SheetConfig> sheets = new ArrayList<>();
+        NodeList sheetNodes = root.getElementsByTagName("dynamic-sheet");
+        for (int i = 0; i < sheetNodes.getLength(); i++) {
+            Element el = (Element) sheetNodes.item(i);
+            SheetConfig sheet = new SheetConfig();
+            sheet.setName(getAttr(el, "name"));
+            sheet.setIterVar(getAttr(el, "for"));
+            String use = getAttr(el, "use");
+            sheet.setUse(!"false".equalsIgnoreCase(use));
+            String maxRows = getAttr(el, "maxRows");
+            if (maxRows != null) {
+                try {
+                    sheet.setMaxRows(Integer.parseInt(maxRows));
+                } catch (NumberFormatException ignored) {
+                }
+            }
+            sheet.setDb(getAttr(el, "db"));
+            sheet.setAggregateColumn(getAttr(el, "aggregateColumn"));
+            sheet.setExceptColumns(getAttr(el, "exceptColumns"));
+            sheet.setStyle(getAttr(el, "style"));
+            sheet.setDateColumnFormat(getAttr(el, "date-column-format"));
+            sheet.setQueryRef(getAttr(el, "queryRef"));
+
+            sheet.setParams(parseSheetParams(el));
+
+            if (sheet.getQueryRef() != null && !sheet.getQueryRef().isEmpty()) {
+                String query = queryDefs != null ? queryDefs.get(sheet.getQueryRef()) : null;
+                if (query == null || query.isEmpty()) {
+                    throw new IllegalStateException("queryDef not found: " + sheet.getQueryRef());
+                }
+                sheet.setQuery(query);
+            } else {
+                NodeList queryNodes = el.getElementsByTagName("query");
+                if (queryNodes.getLength() > 0) {
+                    Element queryEl = (Element) queryNodes.item(0);
+                    sheet.setQuery(queryEl.getTextContent().trim());
+                    sheet.setHiddenColumns(getAttr(queryEl, "hide_columns"));
+                } else {
+                    StringBuilder sql = new StringBuilder();
+                    NodeList children = el.getChildNodes();
+                    for (int j = 0; j < children.getLength(); j++) {
+                        Node child = children.item(j);
+                        if (child.getNodeType() == Node.CDATA_SECTION_NODE || child.getNodeType() == Node.TEXT_NODE) {
+                            sql.append(child.getTextContent());
+                        }
+                    }
+                    sheet.setQuery(sql.toString().trim());
+                }
+            }
+            sheets.add(sheet);
+        }
+        return sheets;
+    }
+
     private Map<String, Object> parseSheetParams(Element sheetEl) {
         Map<String, Object> params = new LinkedHashMap<>();
         NodeList paramLists = sheetEl.getElementsByTagName("params");
@@ -266,6 +322,11 @@ public class ConfigLoader {
         StyleTemplate.apply(qc.getExcel());
         if (qc.getSheets() != null) {
             for (SheetConfig sheet : qc.getSheets()) {
+                StyleTemplate.apply(sheet);
+            }
+        }
+        if (qc.getDynamicSheets() != null) {
+            for (SheetConfig sheet : qc.getDynamicSheets()) {
                 StyleTemplate.apply(sheet);
             }
         }
