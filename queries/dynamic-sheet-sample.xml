@@ -25,7 +25,7 @@
     
   </dynamicVars>
 
-  <dynamic-sheet name="${tableName}" db="postgresDB">
+  <dynamic-sheet name="${tables_list.table_name}" db="postgresDB" for="tables_list">
     <query>
       <![CDATA[
         SELECT 'CREATE TABLE ' || table_name || ' (' || E'\n' || 
@@ -52,7 +52,7 @@
             ) || E'\n' || ');' AS create_table_sql
         FROM information_schema.columns
         WHERE table_schema = 'public' -- 대상 스키마
-              AND table_name = '${tables_list.tableName}' -- 대상 테이블명
+              AND table_name = '${tables_list.table_name}' -- 대상 테이블명
         GROUP BY table_name;
         ]]>
     </query>

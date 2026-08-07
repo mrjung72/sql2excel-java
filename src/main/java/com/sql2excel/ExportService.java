@@ -128,7 +128,13 @@ public class ExportService {
             if (excelConfig.getBody() != null) {
                 tocBody.putAll(excelConfig.getBody());
             }
-            tocBody.put("wrap", true);
+            if (tocBody.containsKey("default") && tocBody.get("default") instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> defaultBody = (Map<String, Object>) tocBody.get("default");
+                defaultBody.put("wrap", true);
+            } else {
+                tocBody.put("wrap", true);
+            }
 
             String lowerPath = outputPath.toLowerCase(Locale.ROOT);
             boolean isTextOutput = lowerPath.endsWith(".csv") || lowerPath.endsWith(".txt")

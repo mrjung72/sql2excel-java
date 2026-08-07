@@ -5,6 +5,8 @@ import picocli.CommandLine.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -35,14 +37,21 @@ public class ValidateCommand implements Callable<Integer> {
             Map<String, DatabaseConfig> databases = loader.loadDatabaseConfig(dbConfigFile);
             QueryConfig queryConfig = loader.loadQueryConfig(queryFile);
 
-            if (queryConfig.getSheets() == null || queryConfig.getSheets().isEmpty()) {
+            List<SheetConfig> allSheets = new ArrayList<>();
+            if (queryConfig.getSheets() != null) {
+                allSheets.addAll(queryConfig.getSheets());
+            }
+            if (queryConfig.getDynamicSheets() != null) {
+                allSheets.addAll(queryConfig.getDynamicSheets());
+            }
+            if (allSheets.isEmpty()) {
                 System.err.println("Error: no sheets defined.");
                 return 1;
             }
 
             ExcelConfig excel = queryConfig.getExcel();
             boolean valid = true;
-            for (SheetConfig sheet : queryConfig.getSheets()) {
+            for (SheetConfig sheet : allSheets) {
                 if (!Boolean.TRUE.equals(sheet.getUse())) {
                     continue;
                 }
