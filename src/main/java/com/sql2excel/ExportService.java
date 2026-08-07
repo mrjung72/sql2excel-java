@@ -12,6 +12,7 @@ import com.sql2excel.database.DatabaseAdapterFactory;
 import com.sql2excel.database.DatabaseType;
 import com.sql2excel.excel.ExcelExporter;
 import com.sql2excel.json.JsonExporter;
+import com.sql2excel.sql.SqlExporter;
 import com.sql2excel.xml.XmlExporter;
 import com.sql2excel.query.QueryExecutor;
 import com.sql2excel.query.QueryResult;
@@ -131,7 +132,7 @@ public class ExportService {
 
             String lowerPath = outputPath.toLowerCase(Locale.ROOT);
             boolean isTextOutput = lowerPath.endsWith(".csv") || lowerPath.endsWith(".txt")
-                    || lowerPath.endsWith(".json") || lowerPath.endsWith(".xml");
+                    || lowerPath.endsWith(".sql") || lowerPath.endsWith(".json") || lowerPath.endsWith(".xml");
             if (!isTextOutput) {
                 sheets.add(0, new ExcelExporter.SheetData("목차", tocColumns, tocRows, tocHeader, tocBody));
             }
@@ -139,6 +140,8 @@ public class ExportService {
             List<String> writtenFiles;
             if (lowerPath.endsWith(".csv") || lowerPath.endsWith(".txt")) {
                 writtenFiles = new CsvExporter().export(outputPath, sheets);
+            } else if (lowerPath.endsWith(".sql")) {
+                writtenFiles = new SqlExporter().export(outputPath, sheets);
             } else if (lowerPath.endsWith(".json")) {
                 writtenFiles = new JsonExporter().export(outputPath, sheets);
             } else if (lowerPath.endsWith(".xml")) {
