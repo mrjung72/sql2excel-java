@@ -35,6 +35,25 @@ public class ValidateCommand implements Callable<Integer> {
 
             ConfigLoader loader = new ConfigLoader();
             Map<String, DatabaseConfig> databases = loader.loadDatabaseConfig(dbConfigFile);
+
+            // Run strict structural validation for XML query files first
+            String fileName = queryFile.getFileName().toString().toLowerCase();
+            if (fileName.endsWith(".xml")) {
+                XmlQueryValidator.ValidationResult xmlResult = XmlQueryValidator.validate(queryFile, databases);
+                for (String warning : xmlResult.getWarnings()) {
+                    System.err.println("Warning: " + warning);
+                }
+                if (xmlResult.hasErrors()) {
+                    for (String error : xmlResult.getErrors()) {
+                        System.err.println("Error: " + error);
+                    }
+                    System.out.println("Validation failed.");
+                    return 1;
+                }
+                System.out.println("Validation passed.");
+                return 0;
+            }
+
             QueryConfig queryConfig = loader.loadQueryConfig(queryFile);
 
             List<SheetConfig> allSheets = new ArrayList<>();

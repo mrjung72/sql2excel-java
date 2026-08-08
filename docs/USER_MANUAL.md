@@ -821,10 +821,13 @@ java -jar sql2excel-java-1.x.x.jar validate -x queries/sample.xml -c config/dbin
 
 **검증 항목**
 
-1. **쿼리 파일 파싱**
-   - XML/JSON 형식이 올바른지
-   - XML의 CDATA, JSON의 인코딩 문제 등
-   - 파싱 실패 시 즉시 오류 메시지 출력
+1. **쿼리 파일 파싱 (XML)**
+   - XML 형식이 올바른지
+   - CDATA, 인코딩 문제 등
+   - 루트 요소가 `<queries>`인지
+   - 허용되지 않는 최상위 요소(`<sheets>`, `<var>` 등)나 속성이 있는지
+   - `<excel>`, `<sheet>`, `<dynamic-sheet>` 등의 요소/속성 이름이 스키마에 맞는지
+   - `<excel>`은 1개만 가능하며 `db`, `output`은 필수
 
 2. **DB 설정 로드**
    - `dbinfo.json`에서 별칭(alias)별 DB 설정을 정상적으로 읽는지
@@ -839,11 +842,21 @@ java -jar sql2excel-java-1.x.x.jar validate -x queries/sample.xml -c config/dbin
    - 시트명이 31자를 초과하면 **경고** (Excel 시트명 제한)
    - 시트명에 특수문자가 있으면 Excel 저장 시 치환될 수 있음
 
-5. **쿼리 내용 검사 (`use=true`인 시트만)**
+5. **요소 및 속성 스키마 검사**
+   - `<sheet>`의 `use` 대신 `used` 같은 오타 속성 검출
+   - `<vars>`는 `<var>`만, `<dynamicVars>`는 `<dynamicVar>`만 포함해야 함
+   - `<sheets>`/`<dynamic-sheets>`/`<queryDefs>` 래퍼 요소의 규칙 확인
+
+6. **쿼리 내용 검사 (`use=true`인 시트만)**
    - 시트에 직접 쿼리가 있거나, `queryRef`로 참조한 `queryDefs`에 쿼리가 있는지
+   - `queryRef`가 실제 `queryDef` ID를 가리키는지
    - 쿼리가 비어 있으면 **오류**
 
-6. **DB 연결 설정 연결 검사 (`use=true`인 시트만)**
+7. **변수 참조 검사 (경고)**
+   - 쿼리, 출력 경로, 시트명에 사용된 `${변수명}`이 정의되었는지
+   - `${DATE...}`, `${CURRENT_TIMESTAMP}` 등 예약 변수는 제외
+
+8. **DB 연결 설정 연결 검사 (`use=true`인 시트만)**
    - 시트의 `db` → 없으면 `excel`의 `db` → 없으면 오류
    - 위 별칭이 `dbinfo.json`에 등록되어 있는지
    - 등록되지 않은 DB를 참조하면 **오류**
@@ -862,13 +875,16 @@ Validation passed.
 ```
 
 ```text
-Error: sheet 'Summary' has no query.
-Error: database 'oracleDB' for sheet 'Orders' not found.
+Error: [line 5] Variables must be defined inside a <vars> block, not as top-level <var>
+Error: [line 4] <sheets> wrapper must not have attributes
+Error: [line 3] Only one <excel> element is allowed, found 2
+Error: [line 3] <excel> requires 'output' attribute
+Error: [line 6] <sheet> has unknown attribute 'used'
 Validation failed.
 ```
 
 ```text
-Warning: sheet name too long (max 31): MonthlySalesReportByRegion
+Warning: [line 24] sheet name too long (max 31): MonthlySalesReportByRegion
 Validation passed.
 ```
 
@@ -1126,4 +1142,5 @@ java -jar sql2excel-java-1.x.x.jar export-style-samples
 | **1.2.5** | 2026-08-07 | `*.sql` 확장자 파일 생성 기능 추가 |
 | **1.2.6** | 2026-08-07 | 동적 시트에 `for` 속성 추가 |
 | **1.2.7** | 2026-08-08 | 사용자 매뉴얼 추가 |
-| **1.2.8** | 2026-08-08 | 사용자 매뉴얼을 빌드/배포판에 포함 |
+| **1.2.8** | 2026-08-08 | 사용자 매뉴얼을 빌드/배포판에 포함, XML 쿼리 파일 구조 검증 강화 |
+| **1.2.9** | 2026-08-08 | XML 쿼리 검증 시 오류/경고에 해당 element 라인 번호 표시 |
