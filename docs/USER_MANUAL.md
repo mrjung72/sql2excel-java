@@ -54,7 +54,7 @@ SQL 쿼리 결과를 Excel(.xlsx), CSV, JSON, XML, SQL(.sql) 등으로 내보내
 
 ### 2.2 실행
 
-릴리즈 디렉토리(`target/sql2excel-java-1.2.7/`)에서 다음 중 하나로 실행합니다.
+릴리즈 디렉토리(`target/sql2excel-java/`)에서 다음 중 하나로 실행합니다.
 
 ```bash
 # Windows
@@ -64,21 +64,23 @@ run.bat
 ./run.sh
 
 # 또는 직접 JAR 실행
-java -jar sql2excel-java-1.2.7.jar [명령어] [옵션]
+java -jar sql2excel-java-1.x.x.jar [명령어] [옵션]
 ```
 
 ---
 
 ## 3. 디렉토리 구조
 
-릴리즈 버전 디렉토리 기준(`target/sql2excel-java-1.2.7/`)입니다.
+릴리즈 버전 디렉토리 기준(`target/sql2excel-java/`)입니다.
 
 ```
-sql2excel-java-1.2.7/
+sql2excel-java/
 ├── config/
 │   ├── dbinfo.json          # 데이터베이스 연결 설정
 │   └── excel-style.json     # Excel 스타일 템플릿
 ├── datas/                   # SQLite 파일 등 데이터 보관
+├── docs/
+│   └── USER_MANUAL.md       # 사용자 매뉴얼
 ├── lib/                     # JDBC 드라이버 JAR
 │   ├── mariadb-java-client-3.5.9.jar
 │   ├── postgresql-42.7.13.jar
@@ -86,7 +88,7 @@ sql2excel-java-1.2.7/
 ├── queries/                 # 쿼리 정의 파일 (XML/JSON)
 ├── run.bat                  # Windows 실행 배치
 ├── run.sh                   # Linux/macOS 실행 스크립트
-├── sql2excel-java-1.2.7.jar # 실행 JAR
+├── sql2excel-java-1.x.x.jar # 실행 JAR
 └── output/                  # (실행 후 생성) 내보낸 파일 저장 위치
 ```
 
@@ -402,7 +404,7 @@ WHERE Region IN (${regionList})
 명령줄에서 `-v` 옵션으로 `vars`를 덮어쓸 수 있습니다.
 
 ```bash
-java -jar sql2excel-java-1.2.7.jar export -x queries/sample.xml \
+java -jar sql2excel-java-1.x.x.jar export -x queries/sample.xml \
   -v startDate=2024-03-01 \
   -v regionList="[Seoul,Daegu]"
 ```
@@ -755,8 +757,8 @@ CSV/TXT/SQL/JSON/XML 등 텍스트 기반 출력에는 목차가 생성되지 �
 ### 10.1 `export` — 쿼리 실행 및 내보내기
 
 ```bash
-java -jar sql2excel-java-1.2.7.jar export -x queries/sample.xml
-java -jar sql2excel-java-1.2.7.jar export -q queries/sample.json -v key=value
+java -jar sql2excel-java-1.x.x.jar export -x queries/sample.xml
+java -jar sql2excel-java-1.x.x.jar export -q queries/sample.json -v key=value
 ```
 
 | 옵션 | 설명 |
@@ -773,7 +775,7 @@ java -jar sql2excel-java-1.2.7.jar export -q queries/sample.json -v key=value
 `excel-style.json`에 정의된 각 스타일로 개별 파일을 생성합니다.
 
 ```bash
-java -jar sql2excel-java-1.2.7.jar export-styles -x queries/sample.xml
+java -jar sql2excel-java-1.x.x.jar export-styles -x queries/sample.xml
 ```
 
 출력 파일명은 `<원본명>-<스타일명>.xlsx` 형태로 생성됩니다.  
@@ -784,7 +786,7 @@ java -jar sql2excel-java-1.2.7.jar export-styles -x queries/sample.xml
 각 스타일이 적용된 샘플 데이터를 한 워크북에 모아 만듭니다.
 
 ```bash
-java -jar sql2excel-java-1.2.7.jar export-style-samples
+java -jar sql2excel-java-1.x.x.jar export-style-samples
 ```
 
 | 옵션 | 설명 |
@@ -795,7 +797,7 @@ java -jar sql2excel-java-1.2.7.jar export-style-samples
 ### 10.4 `list-dbs` — DB 연결 테스트
 
 ```bash
-java -jar sql2excel-java-1.2.7.jar list-dbs -c config/dbinfo.json
+java -jar sql2excel-java-1.x.x.jar list-dbs -c config/dbinfo.json
 ```
 
 ### 10.5 `validate` — 쿼리 정의 파일 검증
@@ -804,9 +806,9 @@ java -jar sql2excel-java-1.2.7.jar list-dbs -c config/dbinfo.json
 실제 DB 연결이나 SQL 실행은 하지 않으므로, 실행 전 파일만으로 빠르게 검사할 수 있습니다.
 
 ```bash
-java -jar sql2excel-java-1.2.7.jar validate -x queries/sample.xml
-java -jar sql2excel-java-1.2.7.jar validate -q queries/sample.json
-java -jar sql2excel-java-1.2.7.jar validate -x queries/sample.xml -c config/dbinfo.json
+java -jar sql2excel-java-1.x.x.jar validate -x queries/sample.xml
+java -jar sql2excel-java-1.x.x.jar validate -q queries/sample.json
+java -jar sql2excel-java-1.x.x.jar validate -x queries/sample.xml -c config/dbinfo.json
 ```
 
 | 옵션 | 설명 |
@@ -883,7 +885,7 @@ Validation passed.
 인수 없이 실행하면 메뉴 화면이 열립니다.
 
 ```bash
-java -jar sql2excel-java-1.2.7.jar
+java -jar sql2excel-java-1.x.x.jar
 ```
 
 ```text
@@ -975,24 +977,24 @@ java.lang.ClassNotFoundException: org.postgresql.Driver
 
 ```bash
 # DB 연결 테스트
-java -jar sql2excel-java-1.2.7.jar list-dbs
+java -jar sql2excel-java-1.x.x.jar list-dbs
 
 # 쿼리 파일 검증
-java -jar sql2excel-java-1.2.7.jar validate -x queries/sample.xml
+java -jar sql2excel-java-1.x.x.jar validate -x queries/sample.xml
 
 # 기본 엑셀 생성
-java -jar sql2excel-java-1.2.7.jar export -x queries/sample.xml
+java -jar sql2excel-java-1.x.x.jar export -x queries/sample.xml
 
 # 변수 오버라이드
-java -jar sql2excel-java-1.2.7.jar export -x queries/sample.xml \
+java -jar sql2excel-java-1.x.x.jar export -x queries/sample.xml \
   -v startDate=2024-01-01 \
   -v endDate=2024-06-30
 
 # 모든 스타일로 생성
-java -jar sql2excel-java-1.2.7.jar export-styles -x queries/sample.xml
+java -jar sql2excel-java-1.x.x.jar export-styles -x queries/sample.xml
 
 # 스타일 샘플 통합 파일
-java -jar sql2excel-java-1.2.7.jar export-style-samples
+java -jar sql2excel-java-1.x.x.jar export-style-samples
 ```
 
 ### 14.2 종합 XML 예시
@@ -1124,3 +1126,4 @@ java -jar sql2excel-java-1.2.7.jar export-style-samples
 | **1.2.5** | 2026-08-07 | `*.sql` 확장자 파일 생성 기능 추가 |
 | **1.2.6** | 2026-08-07 | 동적 시트에 `for` 속성 추가 |
 | **1.2.7** | 2026-08-08 | 사용자 매뉴얼 추가 |
+| **1.2.8** | 2026-08-08 | 사용자 매뉴얼을 빌드/배포판에 포함 |
