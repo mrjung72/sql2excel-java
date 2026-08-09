@@ -18,10 +18,10 @@ fi
 
 # Default work queries (relative to queries/)
 DEFAULT_WORK="
-dynamic-sheet-sample.xml
-mariadb-test.xml
-postgresql-test.xml
-queries-with-dynamic-variables.xml
+example/dynamic-sheet-sample.xml
+test/mariadb-test.xml
+test/postgresql-test.xml
+example/queries-with-dynamic-variables.xml
 "
 
 # Use command-line arguments if provided, otherwise the default list

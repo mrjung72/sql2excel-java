@@ -22,7 +22,7 @@ if not defined JAR (
 )
 
 :: Default work queries (relative to queries\)
-set "DEFAULT_WORK=dynamic-sheet-sample.xml mariadb-test.xml postgresql-test.xml queries-with-dynamic-variables.xml"
+set "DEFAULT_WORK=example\dynamic-sheet-sample.xml test\mariadb-test.xml test\postgresql-test.xml example\queries-with-dynamic-variables.xml"
 
 if "%~1"=="" (
     set "WORK_QUERY_FILES=%DEFAULT_WORK%"
