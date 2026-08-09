@@ -4,4 +4,4 @@ if [ -z "$JAR" ]; then
     echo "No jar file found." >&2
     exit 1
 fi
-exec java -jar "$JAR" "$@"
+exec java -Dlog4j2.configurationFile=config/log4j2.xml -jar "$JAR" "$@"

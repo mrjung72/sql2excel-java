@@ -85,7 +85,7 @@ set /a CNT+=1
 set "LOG_FILE=%LOG_DIR%\%WQ_FILE_NAME%-%DT%-%CNT%.log"
 
 echo [%TS%] Running %QNAME% ...
-java -jar "%JAR%" export -x "!QUERY_PATH!" > "!LOG_FILE!" 2>&1
+java -Dlog4j2.configurationFile=config/log4j2.xml -jar "%JAR%" export -x "!QUERY_PATH!" > "!LOG_FILE!" 2>&1
 if !errorlevel! neq 0 goto :query_failed
 echo [%TS%] Success: %QNAME%
 exit /b 0

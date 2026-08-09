@@ -61,7 +61,7 @@ for work_query_file in $WORK_QUERY_FILES; do
     LOG_FILE="${LOG_DIR}/${wq_file_name}-${RUN_TIME}.log"
 
     echo "[$(date +%Y-%m-%d\ %H:%M:%S)] Running ${work_query_file} ..."
-    java -jar "$JAR" export -x "$QUERY_PATH" > "$LOG_FILE" 2>&1
+    java -Dlog4j2.configurationFile=config/log4j2.xml -jar "$JAR" export -x "$QUERY_PATH" > "$LOG_FILE" 2>&1
     EXIT_CODE=$?
 
     if [ $EXIT_CODE -eq 0 ]; then
