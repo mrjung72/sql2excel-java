@@ -7,7 +7,7 @@
 
     <groupId>com.sql2excel</groupId>
     <artifactId>sql2excel-java</artifactId>
-    <version>1.2.10</version>
+    <version>1.2.11</version>
     <packaging>jar</packaging>
 
     <name>sql2excel-java</name>
@@ -136,8 +136,16 @@
                                 <copy todir="${dist.dir}/lib">
                                     <fileset dir="${project.basedir}/lib"/>
                                 </copy>
-                                <copy file="${project.basedir}/*.bat" todir="${dist.dir}"/>
-                                <copy file="${project.basedir}/*.sh" todir="${dist.dir}"/>
+                                <copy todir="${dist.dir}">
+                                    <fileset dir="${project.basedir}">
+                                        <include name="*.bat"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${dist.dir}">
+                                    <fileset dir="${project.basedir}">
+                                        <include name="*.sh"/>
+                                    </fileset>
+                                </copy>
                                 <copy todir="${dist.dir}/docs">
                                     <fileset dir="${project.basedir}/docs"/>
                                 </copy>
