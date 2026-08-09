@@ -286,36 +286,96 @@ public class MenuRunner {
         pause();
     }
 
-    private FileInfo selectFile(String filterType) {
+    private File selectCategory() {
         File queriesDir = new File("queries");
-        List<FileInfo> files = new ArrayList<>();
+        if (!queriesDir.exists() || !queriesDir.isDirectory()) {
+            System.out.println("queries/ 디렉토리가 없습니다.");
+            System.out.println();
+            pause();
+            return null;
+        }
 
-        if (queriesDir.exists() && queriesDir.isDirectory()) {
-            File[] queryFiles = queriesDir.listFiles(new FileFilter() {
-                @Override
-                public boolean accept(File f) {
-                    if (!f.isFile()) {
-                        return false;
-                    }
-                    String name = f.getName().toLowerCase();
-                    if (filterType == null) {
-                        return name.endsWith(".xml") || name.endsWith(".json");
-                    }
-                    return name.endsWith("." + filterType);
+        File[] categories = queriesDir.listFiles(File::isDirectory);
+        if (categories == null || categories.length == 0) {
+            System.out.println("(카테고리가 없습니다)");
+            System.out.println();
+            pause();
+            return null;
+        }
+
+        Arrays.sort(categories);
+
+        System.out.println("카테고리 선택");
+        System.out.println("사용 가능한 카테고리:");
+        System.out.println();
+        for (int i = 0; i < categories.length; i++) {
+            System.out.println("  " + (i + 1) + ". " + categories[i].getName());
+        }
+        System.out.println();
+
+        String input = prompt("카테고리 번호 선택 (1-" + categories.length + "): ");
+        if (input == null || input.isEmpty()) {
+            System.out.println("카테고리 번호가 입력되지 않았습니다.");
+            System.out.println();
+            pause();
+            return null;
+        }
+
+        int num;
+        try {
+            num = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("잘못된 카테고리 번호입니다. 다음 범위에서 입력하세요 1-" + categories.length);
+            System.out.println();
+            pause();
+            return null;
+        }
+
+        if (num < 1 || num > categories.length) {
+            System.out.println("잘못된 카테고리 번호입니다. 다음 범위에서 입력하세요 1-" + categories.length);
+            System.out.println();
+            pause();
+            return null;
+        }
+
+        File selected = categories[num - 1];
+        System.out.println("선택된 카테고리: " + selected.getName());
+        System.out.println();
+        return selected;
+    }
+
+    private FileInfo selectFile(String filterType) {
+        File categoryDir = selectCategory();
+        if (categoryDir == null) {
+            return null;
+        }
+
+        List<FileInfo> files = new ArrayList<>();
+        File[] queryFiles = categoryDir.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                if (!f.isFile()) {
+                    return false;
                 }
-            });
-            if (queryFiles != null) {
-                Arrays.sort(queryFiles);
-                for (File f : queryFiles) {
-                    String name = f.getName().toLowerCase();
-                    String type = name.endsWith(".xml") ? "XML" : "JSON";
-                    files.add(new FileInfo(f.getName(), f.getPath(), type));
+                String name = f.getName().toLowerCase();
+                if (filterType == null) {
+                    return name.endsWith(".xml") || name.endsWith(".json");
                 }
+                return name.endsWith("." + filterType);
+            }
+        });
+
+        if (queryFiles != null) {
+            Arrays.sort(queryFiles);
+            for (File f : queryFiles) {
+                String name = f.getName().toLowerCase();
+                String type = name.endsWith(".xml") ? "XML" : "JSON";
+                files.add(new FileInfo(f.getName(), f.getPath(), type));
             }
         }
 
         if (files.isEmpty()) {
-            System.out.println("(쿼리 정의 파일이 없습니다)");
+            System.out.println("(선택한 카테고리에 쿼리 정의 파일이 없습니다)");
             System.out.println();
             pause();
             return null;
