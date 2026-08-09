@@ -16,19 +16,32 @@ if command -v cygpath >/dev/null 2>&1; then
     JAR=$(cygpath -w "$JAR")
 fi
 
-# Default work queries (relative to queries/)
-DEFAULT_WORK="
-example/dynamic-sheet-sample.xml
-test/mariadb-test.xml
-test/postgresql-test.xml
-example/queries-with-dynamic-variables.xml
-"
+# Parse arguments: -c|--category <category> or list of query files
+CATEGORY=""
+WORK_QUERY_FILES=""
 
-# Use command-line arguments if provided, otherwise the default list
-if [ $# -gt 0 ]; then
-    WORK_QUERY_FILES="$@"
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 [-c|--category <category>] [query1 query2 ...]" >&2
+    exit 1
+fi
+
+if [ "$1" = "-c" ] || [ "$1" = "--category" ]; then
+    if [ $# -lt 2 ]; then
+        echo "Category not specified." >&2
+        exit 1
+    fi
+    CATEGORY="$2"
+    if [ ! -d "queries/$CATEGORY" ]; then
+        echo "Category not found: $CATEGORY" >&2
+        exit 1
+    fi
+    WORK_QUERY_FILES=$(find "queries/$CATEGORY" -maxdepth 1 -type f -name '*.xml' | sed 's|^queries/||' | sort)
+    if [ -z "$WORK_QUERY_FILES" ]; then
+        echo "No query files in category $CATEGORY." >&2
+        exit 1
+    fi
 else
-    WORK_QUERY_FILES=$DEFAULT_WORK
+    WORK_QUERY_FILES="$@"
 fi
 
 CURR_YYYYMMDD=$(date +%Y%m%d)

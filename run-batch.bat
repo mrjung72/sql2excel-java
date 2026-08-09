@@ -21,11 +21,57 @@ if not defined JAR (
     exit /b 1
 )
 
-:: Default work queries (relative to queries\)
-set "DEFAULT_WORK=example\dynamic-sheet-sample.xml test\mariadb-test.xml test\postgresql-test.xml example\queries-with-dynamic-variables.xml"
+:: Parse arguments: -c ^|--category ^<category^> or list of query files
+set "CATEGORY="
+set "WORK_QUERY_FILES="
 
 if "%~1"=="" (
-    set "WORK_QUERY_FILES=%DEFAULT_WORK%"
+    echo Usage: %~nx0 [-c ^|--category ^<category^>] [query1 query2 ...] >&2
+    exit /b 1
+)
+
+if /i "%~1"=="-c" (
+    set "CATEGORY=%~2"
+    if "!CATEGORY!"=="" (
+        echo Category not specified. >&2
+        exit /b 1
+    )
+    if not exist "queries\!CATEGORY!" (
+        echo Category not found: !CATEGORY! >&2
+        exit /b 1
+    )
+    for /f "delims=" %%f in ('dir /b /o:n "queries\!CATEGORY!\*.xml"') do (
+        if defined WORK_QUERY_FILES (
+            set "WORK_QUERY_FILES=!WORK_QUERY_FILES! !CATEGORY!\%%f"
+        ) else (
+            set "WORK_QUERY_FILES=!CATEGORY!\%%f"
+        )
+    )
+    if "!WORK_QUERY_FILES!"=="" (
+        echo No query files in category !CATEGORY!. >&2
+        exit /b 1
+    )
+) else if /i "%~1"=="--category" (
+    set "CATEGORY=%~2"
+    if "!CATEGORY!"=="" (
+        echo Category not specified. >&2
+        exit /b 1
+    )
+    if not exist "queries\!CATEGORY!" (
+        echo Category not found: !CATEGORY! >&2
+        exit /b 1
+    )
+    for /f "delims=" %%f in ('dir /b /o:n "queries\!CATEGORY!\*.xml"') do (
+        if defined WORK_QUERY_FILES (
+            set "WORK_QUERY_FILES=!WORK_QUERY_FILES! !CATEGORY!\%%f"
+        ) else (
+            set "WORK_QUERY_FILES=!CATEGORY!\%%f"
+        )
+    )
+    if "!WORK_QUERY_FILES!"=="" (
+        echo No query files in category !CATEGORY!. >&2
+        exit /b 1
+    )
 ) else (
     set "WORK_QUERY_FILES=%*"
 )
