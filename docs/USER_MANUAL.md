@@ -17,9 +17,10 @@ SQL 쿼리 결과를 Excel(.xlsx), CSV, JSON, XML, SQL(.sql) 등으로 내보내
 9. [출력 형식](#9-출력-형식)
 10. [명령어 참조](#10-명령어-참조)
 11. [인터랙티브 메뉴](#11-인터랙티브-메뉴)
-12. [문제 해결](#12-문제-해결)
-13. [예시 모음](#13-예시-모음)
-14. [버전 이력](#14-버전-이력)
+12. [DBMS별 자동 처리](#12-DBMS별-자동-처리)
+13. [문제 해결](#13-문제-해결)
+14. [예시 모음](#14-예시-모음)
+15. [버전 이력](#15-버전-이력)
 
 ---
 
@@ -67,6 +68,42 @@ run.bat
 java -jar sql2excel-java-1.x.x.jar [명령어] [옵션]
 ```
 
+### 2.3 배치 실행 (`run-batch`)
+
+여러 쿼리 정의 파일을 한 번에 실행하려면 `run-batch.bat` 또는 `run-batch.sh`를 사용합니다.
+
+```bash
+# Windows
+run-batch.bat [쿼리 파일1] [쿼리 파일2] ...
+
+# Linux/macOS
+./run-batch.sh [쿼리 파일1] [쿼리 파일2] ...
+```
+
+쿼리 파일은 `queries/` 아래 경로를 기준으로 지정합니다.
+
+```bash
+run-batch.bat example/dynamic-sheet-sample.xml test/sqlite-test.xml
+run-batch.sh example/dynamic-sheet-sample.xml test/sqlite-test.xml
+```
+
+특정 카테고리 아래의 모든 `.xml` 쿼리 파일을 한 번에 실행할 수도 있습니다.
+
+```bash
+# Windows
+run-batch.bat -c example
+run-batch.bat --category test
+
+# Linux/macOS
+./run-batch.sh -c example
+./run-batch.sh --category test
+```
+
+- 인자가 없으면 사용법을 출력하고 종료합니다.
+- `-c` 또는 `--category` 옵션 뒤에 카테고리명을 지정하면 해당 카테고리의 `.xml` 파일을 정렬된 순서로 실행합니다.
+- 실행 로그는 `log/YYYYMMDD/<파일명>-<시간>.log`에 저장됩니다.
+- 결과물은 `output/` 디렉토리에 생성됩니다.
+
 ---
 
 ## 3. 디렉토리 구조
@@ -86,11 +123,29 @@ sql2excel-java/
 │   ├── postgresql-42.7.13.jar
 │   └── sqlite-jdbc-3.53.2.1.jar
 ├── queries/                 # 쿼리 정의 파일 (XML/JSON)
-├── run.bat                  # Windows 실행 배치
-├── run.sh                   # Linux/macOS 실행 스크립트
+│   ├── backup/              # 백업 관련 쿼리
+│   ├── example/             # 예제 쿼리
+│   ├── job-related/         # 업무 쿼리
+│   └── test/                # 테스트 쿼리
+├── run.bat                  # Windows CLI 실행
+├── run.sh                   # Linux/macOS CLI 실행
+├── run-UI.bat               # Windows 인터랙티브 UI 실행
+├── run-UI.sh                # Linux/macOS 인터랙티브 UI 실행
+├── run-batch.bat            # Windows 배치 실행
+├── run-batch.sh             # Linux/macOS 배치 실행
 ├── sql2excel-java-1.x.x.jar # 실행 JAR
 └── output/                  # (실행 후 생성) 내보낸 파일 저장 위치
 ```
+
+### 3.1 쿼리 카테고리
+
+`queries/` 아래의 하위 디렉토리가 카테고리입니다. 쿼리 파일은 `queries/<카테고리>/<파일명>.xml` 형태로 관리합니다.
+
+- CLI나 배치 실행 시 경로에 카테고리명을 포함해야 합니다.
+  - 예: `queries/example/dynamic-sheet-sample.xml`
+  - `run-batch` 예: `example/dynamic-sheet-sample.xml`
+- UI(`run-UI`)에서는 메뉴 선택 후 먼저 카테고리를 선택하고, 선택한 카테고리 안에서 파일을 선택합니다.
+- `run-batch`에서 `-c <category>`를 사용하면 해당 카테고리의 모든 `.xml` 파일을 정렬된 순서로 실행합니다.
 
 ---
 
@@ -915,7 +970,7 @@ java -jar sql2excel-java-1.x.x.jar
 0. 종료
 ```
 
-번호를 선택하면 `queries/` 폴더의 파일 목록을 보여주고 실행합니다.
+번호를 선택하면 먼저 `queries/` 아래의 카테고리 목록을 보여주고, 카테고리를 선택하면 해당 카테고리 안의 쿼리 정의 파일 목록을 보여줍니다. 원하는 파일 번호를 선택하면 실행됩니다.
 
 ---
 
@@ -1108,7 +1163,7 @@ java -jar sql2excel-java-1.x.x.jar export-style-samples
 
 ---
 
-## 14. 버전 이력
+## 15. 버전 이력
 
 `pom.xml` 기준입니다.
 
@@ -1144,3 +1199,8 @@ java -jar sql2excel-java-1.x.x.jar export-style-samples
 | **1.2.7** | 2026-08-08 | 사용자 매뉴얼 추가 |
 | **1.2.8** | 2026-08-08 | 사용자 매뉴얼을 빌드/배포판에 포함, XML 쿼리 파일 구조 검증 강화 |
 | **1.2.9** | 2026-08-08 | XML 쿼리 검증 시 오류/경고에 해당 element 라인 번호 표시 |
+| **1.2.10** | 2026-08-09 | Log4j2 설정(`config/log4j2.xml`) 적용 |
+| **1.2.11** | 2026-08-09 | 배치 실행 스크립트(`run-batch.bat`, `run-batch.sh`) 추가 |
+| **1.2.12** | 2026-08-09 | `src/main/resources/` 아래 불필요한 속성 파일 제거 |
+| **1.3.0** | 2026-08-09 | 작업 쿼리문을 카테고리별로 분류, UI 메뉴에 카테고리 선택 기능 추가 |
+| **1.3.1** | 2026-08-09 | `run-batch`에 `-c`/`--category` 카테고리 파라미터 추가, 사용자 매뉴얼 보강 |
