@@ -13,6 +13,7 @@ SQL 쿼리 결과를 엑셀 파일로 내보내는 Java 기반 CLI 도구입니�
 - DB별 `GETDATE()` → `NOW()`, `SYSTIMESTAMP`, `datetime('now')` 등 자동 변환
 - LIMIT/TOP/FETCH FIRST 자동 추가
 - Apache POI 기반 `.xlsx` 다중 시트 엑셀 출력
+- XML 파일 포맷팅 (`format-xml`) 지원
 
 ## 요구사항
 
@@ -48,8 +49,10 @@ SQL2Excel v1.0.0
 
 3. 엑셀 파일 생성 (XML)
 4. 엑셀 파일 생성 (JSON)
-
-5. 도움말
+5. 모든 스타일로 엑셀 파일 생성
+6. 모든 스타일 샘플 엑셀 파일 생성
+7. XML 파일 포맷팅
+8. 도움말
 0. 종료
 ```
 
@@ -67,6 +70,9 @@ java -jar target/sql2excel-java-1.0.0.jar list-dbs -c src/main/resources/config/
 
 # 쿼리 정의 파일 검증
 java -jar target/sql2excel-java-1.0.0.jar validate -q src/main/resources/queries/sample-queries.json
+
+# XML 파일 포맷팅
+java -jar target/sql2excel-java-1.0.0.jar format-xml -i queries/sample.xml -o output/formatted-sample.xml
 ```
 
 ## 설정

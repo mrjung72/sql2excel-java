@@ -27,7 +27,7 @@ public class MenuRunner {
         while (true) {
             printHeader();
             printMenu();
-            String selection = prompt("선택하세요 (0-7): ");
+            String selection = prompt("선택하세요 (0-8): ");
             if (selection == null) {
                 break;
             }
@@ -54,6 +54,9 @@ public class MenuRunner {
                     exportStyleSamples();
                     break;
                 case "7":
+                    formatXmlFile();
+                    break;
+                case "8":
                     printHelp();
                     break;
                 default:
@@ -80,7 +83,8 @@ public class MenuRunner {
         System.out.println("5. 모든 스타일로 엑셀 파일 생성");
         System.out.println("6. 모든 스타일 샘플 엑셀 파일 생성");
         System.out.println();
-        System.out.println("7. 도움말");
+        System.out.println("7. XML 파일 포맷팅");
+        System.out.println("8. 도움말");
         System.out.println("0. 종료");
         System.out.println();
     }
@@ -250,6 +254,43 @@ public class MenuRunner {
         } catch (Exception e) {
             System.out.println("오류: " + e.getMessage());
             e.printStackTrace();
+        }
+
+        pause();
+    }
+
+    private void formatXmlFile() {
+        printHeader();
+        System.out.println("XML 파일 포맷팅");
+        System.out.println();
+
+        FileInfo file = selectFile("xml");
+        if (file == null) {
+            return;
+        }
+
+        System.out.println("선택된 파일: " + file.name);
+        String outputPath = prompt("출력 파일 경로 (비우면 output/formatted-" + file.name + "): ");
+        if (outputPath == null || outputPath.isEmpty()) {
+            new File("output").mkdirs();
+            outputPath = "output/formatted-" + file.name;
+        }
+
+        FormatXmlCommand command = new FormatXmlCommand();
+        command.inputPath = file.path;
+        command.outputPath = outputPath;
+
+        try {
+            int code = command.call();
+            if (code == 0) {
+                System.out.println("✅ XML 파일 포맷팅이 완료되었습니다.");
+                System.out.println("출력: " + outputPath);
+            } else {
+                System.out.println("❌ XML 파일 포맷팅 중 오류가 발생했습니다.");
+            }
+        } catch (Exception e) {
+            System.out.println("❌ XML 파일 포맷팅 중 오류가 발생했습니다.");
+            System.out.println("오류: " + e.getMessage());
         }
 
         pause();

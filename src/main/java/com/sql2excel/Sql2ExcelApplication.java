@@ -13,7 +13,8 @@ import picocli.CommandLine.Command;
                 ExportStylesCommand.class,
                 ExportStyleSamplesCommand.class,
                 ListDbsCommand.class,
-                ValidateCommand.class
+                ValidateCommand.class,
+                FormatXmlCommand.class
         }
 )
 public class Sql2ExcelApplication {

@@ -40,6 +40,7 @@ SQL 쿼리 결과를 Excel(.xlsx), CSV, JSON, XML, SQL(.sql) 등으로 내보내
 - 시트별 스타일 지정 및 `config/excel-style.json` 스타일 템플릿
 - `.xlsx`, `.csv/.txt`, `.json`, `.xml`, `.sql` 출력 지원
 - `.xlsx` 출력 시 **목차(TOC) 시트 자동 생성**
+- XML 파일 포맷팅 (`format-xml`)
 - 인터랙티브 메뉴 / 명령줄(CLI) 실행
 
 ---
@@ -949,6 +950,23 @@ Validation passed.
 - SQL 문법 오류, 실제 테이블/컬럼 존재 여부, DB 네트워크 연결은 검사하지 않습니다.
 - `queryRef`를 사용하는 경우 `queryDefs`에 정의된 쿼리가 올바르게 연결되는지까지 확인합니다.
 
+### 10.6 `format-xml` — XML 파일 포맷팅
+
+XML 파일을 읽어 들여 들여쓰기가 적용된 형태로 재출력합니다.  
+쿼리 정의 파일의 가독성을 높이거나 XML 구조를 정리할 때 사용합니다.
+
+```bash
+java -jar sql2excel-java-1.x.x.jar format-xml -i queries/sample.xml -o output/formatted-sample.xml
+java -jar sql2excel-java-1.x.x.jar format-xml -i queries/sample.xml
+```
+
+| 옵션 | 설명 |
+|------|------|
+| `-i, --input` | 입력 XML 파일 경로 (필수) |
+| `-o, --output` | 출력 XML 파일 경로. 생략하면 표준 출력 |
+
+`-o`를 생략하면 화면에 예쁘게 출력됩니다.
+
 ---
 
 ## 11. 인터랙티브 메뉴
@@ -966,7 +984,8 @@ java -jar sql2excel-java-1.x.x.jar
 4. 엑셀 파일 생성 (JSON)
 5. 모든 스타일로 엑셀 파일 생성
 6. 모든 스타일 샘플 엑셀 파일 생성
-7. 도움말
+7. XML 파일 포맷팅
+8. 도움말
 0. 종료
 ```
 
