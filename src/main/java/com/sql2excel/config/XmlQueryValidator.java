@@ -33,12 +33,14 @@ public class XmlQueryValidator {
 
     private static final Set<String> SHEET_ATTRS = new HashSet<>(Arrays.asList(
             "name", "use", "maxRows", "db", "aggregateColumn", "exceptColumns",
-            "style", "date-column-format", "queryRef", "aggregateInfoTemplate", "hiddenColumns"
+            "style", "date-column-format", "queryRef", "aggregateInfoTemplate", "hiddenColumns",
+            "loc_desc", "sheet_comments"
     ));
 
     private static final Set<String> DYNAMIC_SHEET_ATTRS = new HashSet<>(Arrays.asList(
             "name", "for", "use", "maxRows", "db", "aggregateColumn", "exceptColumns",
-            "style", "date-column-format", "queryRef", "aggregateInfoTemplate", "hiddenColumns"
+            "style", "date-column-format", "queryRef", "aggregateInfoTemplate", "hiddenColumns",
+            "loc_desc", "sheet_comments"
     ));
 
     private static final Set<String> DYNAMIC_VAR_ATTRS = new HashSet<>(Arrays.asList(

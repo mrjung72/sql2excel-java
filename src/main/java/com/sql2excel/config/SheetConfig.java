@@ -28,6 +28,10 @@ public class SheetConfig {
     private String iterVar;
     private Map<String, Object> header;
     private Map<String, Object> body;
+    @JsonProperty("loc_desc")
+    private String locDesc;
+    @JsonProperty("sheet_comments")
+    private String sheetComments;
 
     public SheetConfig() {
     }
@@ -150,5 +154,21 @@ public class SheetConfig {
 
     public void setBody(Map<String, Object> body) {
         this.body = body;
+    }
+
+    public String getLocDesc() {
+        return locDesc;
+    }
+
+    public void setLocDesc(String locDesc) {
+        this.locDesc = locDesc;
+    }
+
+    public String getSheetComments() {
+        return sheetComments;
+    }
+
+    public void setSheetComments(String sheetComments) {
+        this.sheetComments = sheetComments;
     }
 }

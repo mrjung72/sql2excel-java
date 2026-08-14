@@ -12,20 +12,20 @@
   <dynamicVars>
     
     <!-- key_value_pairs type: First column as key, second column as value -->
-    <dynamicVar name="tables_list" 
-      type="key_value_pairs" 
-      description="Table list">
+    <dynamicVar name="tables_list">
       <![CDATA[
-        SELECT table_name
-        FROM information_schema.tables
-        WHERE table_schema = 'public'
-        ORDER BY table_name
+        select 'customers' table_name, '고객정보' name, '고객정보를 관리한다.' comments union all
+        select 'enployees' table_name, '직원정보' name, '직원정보를 관리한다.' comments union all
+        select 'orders' table_name, '주문정보' name, '주문정보를 관리한다.' comments union all
+        select 'products' table_name, '제품정보' name, '제품정보를 관리한다.' comments 
       ]]>
     </dynamicVar>
     
   </dynamicVars>
 
-  <dynamic-sheet name="${tables_list.table_name}" db="postgresDB" for="tables_list">
+  <dynamic-sheet name="${tables_list.table_name}" db="postgresDB" for="tables_list" 
+        loc_desc="${tables_list.name}" 
+        sheet_comments="${tables_list.comments}">
     <query>
       <![CDATA[
         SELECT 'CREATE TABLE ' || table_name || ' (' || E'\n' || 

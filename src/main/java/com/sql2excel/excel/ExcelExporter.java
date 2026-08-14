@@ -78,8 +78,20 @@ public class ExcelExporter {
             }
         }
 
+        int startRow = 0;
+        String sheetComments = data.getSheetComments();
+        if (sheetComments != null && !sheetComments.isEmpty()) {
+            Row commentRow = sheet.createRow(0);
+            Cell commentCell = commentRow.createCell(0);
+            commentCell.setCellValue(sheetComments);
+            if (columns.size() > 1) {
+                sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, columns.size() - 1));
+            }
+            startRow = 1;
+        }
+
         // Header
-        Row header = sheet.createRow(0);
+        Row header = sheet.createRow(startRow);
         for (int i = 0; i < columns.size(); i++) {
             Cell cell = header.createCell(i);
             cell.setCellValue(columns.get(i));
@@ -90,7 +102,7 @@ public class ExcelExporter {
 
         // Body
         for (int r = 0; r < rows.size(); r++) {
-            Row row = sheet.createRow(r + 1);
+            Row row = sheet.createRow(startRow + r + 1);
             Map<String, Object> record = rows.get(r);
             for (int i = 0; i < columns.size(); i++) {
                 Cell cell = row.createCell(i);
@@ -129,7 +141,7 @@ public class ExcelExporter {
         }
 
         // Freeze header row
-        sheet.createFreezePane(0, 1);
+        sheet.createFreezePane(0, startRow + 1);
         return sheetName;
     }
 
@@ -543,6 +555,8 @@ public class ExcelExporter {
         private final Map<String, Object> body;
         private final List<String> hiddenColumns;
         private final String dateColumnFormat;
+        private final String locDesc;
+        private final String sheetComments;
 
         public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
                          Map<String, Object> header, Map<String, Object> body) {
@@ -558,6 +572,13 @@ public class ExcelExporter {
         public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
                          Map<String, Object> header, Map<String, Object> body,
                          List<String> hiddenColumns, String dateColumnFormat) {
+            this(name, columns, rows, header, body, hiddenColumns, dateColumnFormat, null, null);
+        }
+
+        public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
+                         Map<String, Object> header, Map<String, Object> body,
+                         List<String> hiddenColumns, String dateColumnFormat,
+                         String locDesc, String sheetComments) {
             this.name = name;
             this.columns = columns;
             this.rows = rows;
@@ -565,6 +586,8 @@ public class ExcelExporter {
             this.body = body;
             this.hiddenColumns = hiddenColumns;
             this.dateColumnFormat = dateColumnFormat;
+            this.locDesc = locDesc;
+            this.sheetComments = sheetComments;
         }
 
         public String getName() {
@@ -593,6 +616,14 @@ public class ExcelExporter {
 
         public String getDateColumnFormat() {
             return dateColumnFormat;
+        }
+
+        public String getLocDesc() {
+            return locDesc;
+        }
+
+        public String getSheetComments() {
+            return sheetComments;
         }
     }
 }

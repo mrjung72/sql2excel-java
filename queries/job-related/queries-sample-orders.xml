@@ -17,10 +17,12 @@
   </vars>
 
   <sheet name="${envType}_Order_List" 
-    use="true" 
-    aggregateColumn="PaymentMethod" 
-    maxRows="100"
-	style="modern">
+          use="true" 
+          aggregateColumn="PaymentMethod" 
+          maxRows="100"
+          style="modern"
+          loc_desc="주문목록" 
+          sheet_comments="주문 목록을 조회합니다.">
     <![CDATA[
       SELECT 
         OrderNumber as OrderNumber,
@@ -38,6 +40,8 @@
     use="true" 
     aggregateColumn="Region" 
     style="dark"
+          loc_desc="고객목록" 
+          sheet_comments="고객 목록을 조회합니다."
 	date-column-format="yyyy-MM-dd hh:mm:ss">
     <![CDATA[
       SELECT *

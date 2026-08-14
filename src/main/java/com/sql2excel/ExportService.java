@@ -101,15 +101,19 @@ public class ExportService {
                     filteredRows.add(filtered);
                 }
 
-                String sheetName = new VariableResolver().resolve(sheet.getName(), sheetVars);
+                VariableResolver resolver = new VariableResolver();
+                String sheetName = resolver.resolve(sheet.getName(), sheetVars);
+                String locDesc = sheet.getLocDesc() != null ? resolver.resolve(sheet.getLocDesc(), sheetVars) : null;
+                String sheetComments = sheet.getSheetComments() != null ? resolver.resolve(sheet.getSheetComments(), sheetVars) : null;
                 Map<String, Object> header = sheet.getHeader() != null ? sheet.getHeader() : excelConfig.getHeader();
                 Map<String, Object> body = sheet.getBody() != null ? sheet.getBody() : excelConfig.getBody();
                 List<String> hiddenColumns = parseColumns(sheet.getHiddenColumns());
                 String dateColumnFormat = sheet.getDateColumnFormat() != null ? sheet.getDateColumnFormat() : excelConfig.getDateColumnFormat();
-                sheets.add(new ExcelExporter.SheetData(sheetName, columns, filteredRows, header, body, hiddenColumns, dateColumnFormat));
+                sheets.add(new ExcelExporter.SheetData(sheetName, columns, filteredRows, header, body, hiddenColumns, dateColumnFormat, locDesc, sheetComments));
 
                 Map<String, Object> tocRow = new LinkedHashMap<>();
                 tocRow.put("시트명", sheetName);
+                tocRow.put("loc_desc", locDesc);
                 tocRow.put("조회건수", result.getRowCount());
                 tocRow.put("사용된 SQL문", result.getQuery());
                 tocRows.add(tocRow);
@@ -122,7 +126,7 @@ public class ExportService {
                 return 0;
             }
 
-            List<String> tocColumns = Arrays.asList("시트명", "조회건수", "사용된 SQL문");
+            List<String> tocColumns = Arrays.asList("시트명", "loc_desc", "조회건수", "사용된 SQL문");
             Map<String, Object> tocHeader = excelConfig.getHeader();
             Map<String, Object> tocBody = new HashMap<>();
             if (excelConfig.getBody() != null) {
@@ -373,6 +377,8 @@ public class ExportService {
                 expanded.setAggregateColumn(template.getAggregateColumn());
                 expanded.setExceptColumns(template.getExceptColumns());
                 expanded.setHiddenColumns(template.getHiddenColumns());
+                expanded.setLocDesc(template.getLocDesc());
+                expanded.setSheetComments(template.getSheetComments());
                 expanded.setHeader(template.getHeader());
                 expanded.setBody(template.getBody());
                 result.add(expanded);

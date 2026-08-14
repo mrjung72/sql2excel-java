@@ -180,6 +180,8 @@ public class ConfigLoader {
             sheet.setStyle(getAttr(el, "style"));
             sheet.setDateColumnFormat(getAttr(el, "date-column-format"));
             sheet.setQueryRef(getAttr(el, "queryRef"));
+            sheet.setLocDesc(getAttr(el, "loc_desc"));
+            sheet.setSheetComments(getAttr(el, "sheet_comments"));
 
             sheet.setParams(parseSheetParams(el));
 
@@ -235,6 +237,8 @@ public class ConfigLoader {
             sheet.setStyle(getAttr(el, "style"));
             sheet.setDateColumnFormat(getAttr(el, "date-column-format"));
             sheet.setQueryRef(getAttr(el, "queryRef"));
+            sheet.setLocDesc(getAttr(el, "loc_desc"));
+            sheet.setSheetComments(getAttr(el, "sheet_comments"));
 
             sheet.setParams(parseSheetParams(el));
 
