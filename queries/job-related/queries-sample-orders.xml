@@ -3,6 +3,7 @@
     output="output/sales_summary_${DATE.KST:yyyyMMddhhmmss}.xlsx" 
     maxRows="20000" 
     style="default"
+    apply-column-comment="true"
     date-column-format="yyyy/MM/dd hh:mm:ss">
   </excel>
 

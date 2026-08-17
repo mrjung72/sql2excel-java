@@ -59,11 +59,17 @@ public class JdbcDatabaseAdapter implements DatabaseAdapter {
 
     @Override
     public QueryResult executeQuery(String sql, Integer maxRows) throws SQLException {
+        return executeQuery(sql, maxRows, false);
+    }
+
+    @Override
+    public QueryResult executeQuery(String sql, Integer maxRows, boolean fetchComments) throws SQLException {
         if (connection == null || connection.isClosed()) {
             throw new SQLException("Connection is not open");
         }
 
         List<Map<String, Object>> rows = new ArrayList<>();
+        Map<String, String> columnComments = new LinkedHashMap<>();
         try (Statement stmt = connection.createStatement()) {
             if (maxRows != null && maxRows > 0) {
                 stmt.setMaxRows(maxRows);
@@ -71,6 +77,9 @@ public class JdbcDatabaseAdapter implements DatabaseAdapter {
             try (ResultSet rs = stmt.executeQuery(sql)) {
                 ResultSetMetaData meta = rs.getMetaData();
                 int columnCount = meta.getColumnCount();
+                if (fetchComments) {
+                    columnComments = fetchColumnComments(meta);
+                }
                 while (rs.next()) {
                     Map<String, Object> row = new LinkedHashMap<>();
                     for (int i = 1; i <= columnCount; i++) {
@@ -80,7 +89,42 @@ public class JdbcDatabaseAdapter implements DatabaseAdapter {
                 }
             }
         }
-        return new QueryResult(rows);
+        return new QueryResult(rows, null, columnComments);
+    }
+
+    private Map<String, String> fetchColumnComments(ResultSetMetaData meta) throws SQLException {
+        Map<String, String> comments = new LinkedHashMap<>();
+        DatabaseMetaData dbMeta = connection.getMetaData();
+        int count = meta.getColumnCount();
+        for (int i = 1; i <= count; i++) {
+            String label = meta.getColumnLabel(i);
+            String tableName = meta.getTableName(i);
+            String columnName = meta.getColumnName(i);
+            String comment = lookupColumnComment(dbMeta, tableName, columnName);
+            comments.put(label, comment);
+        }
+        return comments;
+    }
+
+    private String lookupColumnComment(DatabaseMetaData dbMeta, String tableName, String columnName) throws SQLException {
+        if (tableName == null || tableName.isEmpty() || columnName == null || columnName.isEmpty()) {
+            return null;
+        }
+        String[] tableCandidates = new String[]{tableName, tableName.toLowerCase(), tableName.toUpperCase()};
+        String[] columnCandidates = new String[]{columnName, columnName.toLowerCase(), columnName.toUpperCase()};
+        for (String table : tableCandidates) {
+            for (String column : columnCandidates) {
+                try (ResultSet rs = dbMeta.getColumns(null, null, table, column)) {
+                    if (rs.next()) {
+                        String remarks = rs.getString("REMARKS");
+                        if (remarks != null && !remarks.isEmpty()) {
+                            return remarks;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     @Override

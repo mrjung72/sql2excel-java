@@ -13,6 +13,7 @@ public class ExcelConfig {
     private Map<String, Object> body;
     private String style;
     private String dateColumnFormat;
+    private boolean applyColumnComment;
 
     public ExcelConfig() {
     }
@@ -71,5 +72,13 @@ public class ExcelConfig {
 
     public void setDateColumnFormat(String dateColumnFormat) {
         this.dateColumnFormat = dateColumnFormat;
+    }
+
+    public boolean isApplyColumnComment() {
+        return applyColumnComment;
+    }
+
+    public void setApplyColumnComment(boolean applyColumnComment) {
+        this.applyColumnComment = applyColumnComment;
     }
 }

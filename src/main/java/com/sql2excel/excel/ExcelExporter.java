@@ -81,13 +81,28 @@ public class ExcelExporter {
         int startRow = 0;
         String sheetComments = data.getSheetComments();
         if (sheetComments != null && !sheetComments.isEmpty()) {
-            Row commentRow = sheet.createRow(0);
-            Cell commentCell = commentRow.createCell(0);
+            Row topRow = sheet.createRow(0);
+            Cell commentCell = topRow.createCell(0);
             commentCell.setCellValue(sheetComments);
             if (columns.size() > 1) {
                 sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, columns.size() - 1));
             }
             startRow = 1;
+        }
+
+        // Column comments
+        if (data.isApplyColumnComment()) {
+            Row commentRow = sheet.createRow(startRow);
+            Map<String, String> columnComments = data.getColumnComments();
+            for (int i = 0; i < columns.size(); i++) {
+                Cell cell = commentRow.createCell(i);
+                String comment = columnComments != null ? columnComments.get(columns.get(i)) : null;
+                cell.setCellValue(comment != null ? comment : "");
+                if (headerStyle != null) {
+                    cell.setCellStyle(headerStyle);
+                }
+            }
+            startRow++;
         }
 
         // Header
@@ -557,28 +572,38 @@ public class ExcelExporter {
         private final String dateColumnFormat;
         private final String locDesc;
         private final String sheetComments;
+        private final boolean applyColumnComment;
+        private final Map<String, String> columnComments;
 
         public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
                          Map<String, Object> header, Map<String, Object> body) {
-            this(name, columns, rows, header, body, Collections.emptyList(), null);
+            this(name, columns, rows, header, body, Collections.emptyList(), null, null, null, false, null);
         }
 
         public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
                          Map<String, Object> header, Map<String, Object> body,
                          List<String> hiddenColumns) {
-            this(name, columns, rows, header, body, hiddenColumns, null);
+            this(name, columns, rows, header, body, hiddenColumns, null, null, null, false, null);
         }
 
         public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
                          Map<String, Object> header, Map<String, Object> body,
                          List<String> hiddenColumns, String dateColumnFormat) {
-            this(name, columns, rows, header, body, hiddenColumns, dateColumnFormat, null, null);
+            this(name, columns, rows, header, body, hiddenColumns, dateColumnFormat, null, null, false, null);
         }
 
         public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
                          Map<String, Object> header, Map<String, Object> body,
                          List<String> hiddenColumns, String dateColumnFormat,
                          String locDesc, String sheetComments) {
+            this(name, columns, rows, header, body, hiddenColumns, dateColumnFormat, locDesc, sheetComments, false, null);
+        }
+
+        public SheetData(String name, List<String> columns, List<Map<String, Object>> rows,
+                         Map<String, Object> header, Map<String, Object> body,
+                         List<String> hiddenColumns, String dateColumnFormat,
+                         String locDesc, String sheetComments,
+                         boolean applyColumnComment, Map<String, String> columnComments) {
             this.name = name;
             this.columns = columns;
             this.rows = rows;
@@ -588,6 +613,8 @@ public class ExcelExporter {
             this.dateColumnFormat = dateColumnFormat;
             this.locDesc = locDesc;
             this.sheetComments = sheetComments;
+            this.applyColumnComment = applyColumnComment;
+            this.columnComments = columnComments;
         }
 
         public String getName() {
@@ -624,6 +651,14 @@ public class ExcelExporter {
 
         public String getSheetComments() {
             return sheetComments;
+        }
+
+        public boolean isApplyColumnComment() {
+            return applyColumnComment;
+        }
+
+        public Map<String, String> getColumnComments() {
+            return columnComments;
         }
     }
 }

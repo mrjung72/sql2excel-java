@@ -98,6 +98,10 @@ public class ConfigLoader {
             }
             excel.setStyle(getAttr(el, "style"));
             excel.setDateColumnFormat(getAttr(el, "date-column-format"));
+            String applyColumnComment = getAttr(el, "apply-column-comment");
+            if (applyColumnComment != null) {
+                excel.setApplyColumnComment("true".equalsIgnoreCase(applyColumnComment));
+            }
         }
         return excel;
     }

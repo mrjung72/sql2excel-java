@@ -28,7 +28,8 @@ import java.util.regex.Pattern;
 public class XmlQueryValidator {
 
     private static final Set<String> EXCEL_ATTRS = new HashSet<>(Arrays.asList(
-            "db", "output", "maxRows", "style", "date-column-format", "aggregateInfoTemplate"
+            "db", "output", "maxRows", "style", "date-column-format", "aggregateInfoTemplate",
+            "apply-column-comment"
     ));
 
     private static final Set<String> SHEET_ATTRS = new HashSet<>(Arrays.asList(

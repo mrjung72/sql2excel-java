@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queries>
+  <!-- 동적 시트 샘플 쿼리 -->
+  <excel 
+    output="output/dynamic-sheet-sample2_${DATE.KST:YYYYMMDD-HHMMSS}.xlsx" 
+    db="postgresDB"
+	  apply-column-comment="true"
+    style="modern">
+  </excel>
+
+
+  <!-- Dynamic variable definitions -->
+  <dynamicVars>
+    
+    <!-- key_value_pairs type: First column as key, second column as value -->
+    <dynamicVar name="tables_list">
+      <![CDATA[
+        select 'customers' table_name, '고객정보' name, '고객정보를 관리한다.' comments union all
+        select 'employees' table_name, '직원정보' name, '직원정보를 관리한다.' comments union all
+        select 'orders' table_name, '주문정보' name, '주문정보를 관리한다.' comments union all
+        select 'products' table_name, '제품정보' name, '제품정보를 관리한다.' comments 
+      ]]>
+    </dynamicVar>
+    
+  </dynamicVars>
+
+  <dynamic-sheet name="${tables_list.table_name}" db="postgresDB" for="tables_list" 
+        loc_desc="${tables_list.name}" 
+        sheet_comments="${tables_list.comments}">
+    <query>
+      <![CDATA[
+        select *
+        from ${tables_list.table_name}
+        ]]>
+    </query>
+  </dynamic-sheet>
+
+</queries>
+

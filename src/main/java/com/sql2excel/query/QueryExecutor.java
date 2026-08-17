@@ -23,6 +23,10 @@ public class QueryExecutor {
     }
 
     public QueryResult run(SheetConfig sheet, Map<String, Object> vars, Integer globalMaxRows) throws Exception {
+        return run(sheet, vars, globalMaxRows, false);
+    }
+
+    public QueryResult run(SheetConfig sheet, Map<String, Object> vars, Integer globalMaxRows, boolean applyColumnComment) throws Exception {
         ensureConnected();
         String sql = sheet.getQuery();
         if (sql == null || sql.isEmpty()) {
@@ -34,8 +38,8 @@ public class QueryExecutor {
 
         Integer maxRows = sheet.getMaxRows() != null ? sheet.getMaxRows() : globalMaxRows;
 
-        QueryResult raw = adapter.executeQuery(sql, maxRows);
-        return new QueryResult(raw.getRows(), sql);
+        QueryResult raw = adapter.executeQuery(sql, maxRows, applyColumnComment);
+        return new QueryResult(raw.getRows(), sql, raw.getColumnComments());
     }
 
     private String applyDatabaseDialect(String sql) {

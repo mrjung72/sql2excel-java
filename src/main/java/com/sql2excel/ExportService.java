@@ -85,7 +85,8 @@ public class ExportService {
                 }
 
                 QueryExecutor executor = executors.computeIfAbsent(dbKey, k -> new QueryExecutor(dbConfig));
-                QueryResult result = executor.run(sheet, sheetVars, excelConfig.getMaxRows());
+                boolean applyColumnComment = excelConfig != null && excelConfig.isApplyColumnComment();
+                QueryResult result = executor.run(sheet, sheetVars, excelConfig.getMaxRows(), applyColumnComment);
 
                 List<String> columns = result.getRows().isEmpty()
                         ? Collections.emptyList()
@@ -109,7 +110,7 @@ public class ExportService {
                 Map<String, Object> body = sheet.getBody() != null ? sheet.getBody() : excelConfig.getBody();
                 List<String> hiddenColumns = parseColumns(sheet.getHiddenColumns());
                 String dateColumnFormat = sheet.getDateColumnFormat() != null ? sheet.getDateColumnFormat() : excelConfig.getDateColumnFormat();
-                sheets.add(new ExcelExporter.SheetData(sheetName, columns, filteredRows, header, body, hiddenColumns, dateColumnFormat, locDesc, sheetComments));
+                sheets.add(new ExcelExporter.SheetData(sheetName, columns, filteredRows, header, body, hiddenColumns, dateColumnFormat, locDesc, sheetComments, applyColumnComment, result.getColumnComments()));
 
                 Map<String, Object> tocRow = new LinkedHashMap<>();
                 tocRow.put("시트명", sheetName);

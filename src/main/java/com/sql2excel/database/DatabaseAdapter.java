@@ -10,4 +10,5 @@ public interface DatabaseAdapter {
     void close() throws Exception;
     boolean testConnection() throws Exception;
     QueryResult executeQuery(String sql, Integer maxRows) throws SQLException;
+    QueryResult executeQuery(String sql, Integer maxRows, boolean fetchComments) throws SQLException;
 }
