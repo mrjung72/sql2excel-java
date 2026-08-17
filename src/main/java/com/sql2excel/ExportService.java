@@ -88,9 +88,10 @@ public class ExportService {
                 boolean applyColumnComment = excelConfig != null && excelConfig.isApplyColumnComment();
                 QueryResult result = executor.run(sheet, sheetVars, excelConfig.getMaxRows(), applyColumnComment);
 
-                List<String> columns = result.getRows().isEmpty()
-                        ? Collections.emptyList()
-                        : new ArrayList<>(result.getRows().get(0).keySet());
+                List<String> columns = new ArrayList<>(result.getColumns());
+                if (columns.isEmpty() && !result.getRows().isEmpty()) {
+                    columns = new ArrayList<>(result.getRows().get(0).keySet());
+                }
                 columns = ExcelExporter.filterColumns(columns, sheet.getExceptColumns());
 
                 List<Map<String, Object>> filteredRows = new ArrayList<>();
@@ -422,7 +423,10 @@ public class ExportService {
                     continue;
                 }
 
-                List<String> columns = new ArrayList<>(result.getRows().get(0).keySet());
+                List<String> columns = new ArrayList<>(result.getColumns());
+                if (columns.isEmpty() && !result.getRows().isEmpty()) {
+                    columns = new ArrayList<>(result.getRows().get(0).keySet());
+                }
                 Map<String, List<Object>> columnLists = new LinkedHashMap<>();
                 for (String col : columns) {
                     columnLists.put(col, new ArrayList<>());

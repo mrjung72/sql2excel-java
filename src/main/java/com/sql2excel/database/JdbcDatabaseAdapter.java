@@ -70,6 +70,7 @@ public class JdbcDatabaseAdapter implements DatabaseAdapter {
 
         List<Map<String, Object>> rows = new ArrayList<>();
         Map<String, String> columnComments = new LinkedHashMap<>();
+        List<String> columnLabels = new ArrayList<>();
         try (Statement stmt = connection.createStatement()) {
             if (maxRows != null && maxRows > 0) {
                 stmt.setMaxRows(maxRows);
@@ -77,6 +78,9 @@ public class JdbcDatabaseAdapter implements DatabaseAdapter {
             try (ResultSet rs = stmt.executeQuery(sql)) {
                 ResultSetMetaData meta = rs.getMetaData();
                 int columnCount = meta.getColumnCount();
+                for (int i = 1; i <= columnCount; i++) {
+                    columnLabels.add(meta.getColumnLabel(i));
+                }
                 if (fetchComments) {
                     columnComments = fetchColumnComments(meta);
                 }
@@ -89,7 +93,7 @@ public class JdbcDatabaseAdapter implements DatabaseAdapter {
                 }
             }
         }
-        return new QueryResult(rows, null, columnComments);
+        return new QueryResult(rows, null, columnComments, columnLabels);
     }
 
     private Map<String, String> fetchColumnComments(ResultSetMetaData meta) throws SQLException {

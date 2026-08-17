@@ -39,7 +39,7 @@ public class QueryExecutor {
         Integer maxRows = sheet.getMaxRows() != null ? sheet.getMaxRows() : globalMaxRows;
 
         QueryResult raw = adapter.executeQuery(sql, maxRows, applyColumnComment);
-        return new QueryResult(raw.getRows(), sql, raw.getColumnComments());
+        return new QueryResult(raw.getRows(), sql, raw.getColumnComments(), raw.getColumns());
     }
 
     private String applyDatabaseDialect(String sql) {
